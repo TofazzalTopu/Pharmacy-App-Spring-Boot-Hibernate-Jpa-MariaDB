@@ -1,0 +1,113 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1 style="text-align:center">
+                Add Customer
+            </h1>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <!-- left column -->
+                <div class="col-md-8 col-md-offset-2">
+                    <!-- general form elements -->
+                    <div class="box box-primary">
+                        <!-- /.box-header -->
+                        <!-- form start -->
+                        <form role="form" id="add_category" method="post" th:action="@{/adminpanel/clients/saveclients}" th:object="${clients}" >
+                            <div class="box-body">
+                                <div class="form-group">
+                                    <label for="name"> Name</label>
+                                    <input required type="text" th:field="*{name}" id="name" class="form-control" autofocus="autofocus" placeholder="Enter name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="mobile"> Mobile</label>
+                                    <input required type="text" th:field="*{mobile}" id="mobile" class="form-control" autofocus="autofocus" placeholder="Enter name">
+                                </div>
+                                <div class="form-group">
+                                    <label> Address</label>
+                                    <textarea class="form-control" rows="4" cols="50" th:field="*{address}"></textarea>
+                                </div>
+
+                            </div>
+                            <div class="box-footer">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
+                        <!--<script>-->
+                            <!--var example = new Vue({-->
+                                <!--el: '#add_category',-->
+                                <!--data:{-->
+                                    <!--photo:"",-->
+                                    <!--imageData:"",-->
+
+                                    <!--mainText: "",-->
+                                    <!--detailsText: "",-->
+                                <!--},-->
+                                <!--mounted:function(){-->
+                                    <!--var mainTextOutput = "";-->
+                                    <!--var detailsTextOutput = "";-->
+
+                                    <!--var quillMainOutput = new Quill('#editor', {-->
+                                        <!--theme: 'snow'-->
+                                    <!--});-->
+                                    <!--var quillDetailsOutput = new Quill('#editor1', {-->
+                                        <!--theme: 'snow'-->
+                                    <!--});-->
+
+                                    <!--function mainTextFunction() {-->
+                                        <!--mainTextOutput = quillMainOutput.root.innerHTML;-->
+                                        <!--return mainTextOutput;-->
+                                    <!--}-->
+                                    <!--function detailsTextFunction() {-->
+                                        <!--detailsTextOutput = quillDetailsOutput.root.innerHTML;-->
+                                        <!--return detailsTextOutput;-->
+                                    <!--}-->
+
+                                    <!--window.setInterval(() => {-->
+                                        <!--this.mainText = mainTextFunction();-->
+                                    <!--},500);-->
+                                        <!--window.setInterval(() => {-->
+                                            <!--this.detailsText = detailsTextFunction();-->
+                                    <!--},500);-->
+                                <!--},-->
+                                <!--methods:{-->
+                                    <!--imgUpload: function (event) {-->
+                                        <!--var input = event.target;-->
+                                        <!--this.featuredImageFlag = true;-->
+
+                                        <!--if (input.files && input.files[0]) {-->
+                                            <!--var reader = new FileReader();-->
+                                            <!--reader.onload = (e) => {-->
+                                                <!--this.imageData = e.target.result;-->
+                                                <!--this.photo = e.target.result;-->
+                                            <!--}-->
+                                            <!--reader.readAsDataURL(input.files[0]);-->
+                                        <!--}-->
+                                    <!--},-->
+                                    <!--removeImg:function () {-->
+                                        <!--this.imageData = "";-->
+                                    <!--}-->
+                                <!--}-->
+                            <!--})-->
+                        <!--</script>-->
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+        </section>
+        <!-- /.content -->
+    </div>
+</div>
+</body>
+</html>

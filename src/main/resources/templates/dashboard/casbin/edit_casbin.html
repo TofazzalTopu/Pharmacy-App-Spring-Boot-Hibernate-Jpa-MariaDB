@@ -1,0 +1,111 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1 style="text-align:center">
+                Edit Casbin Access
+            </h1>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <!-- left column -->
+                <div class="col-md-8 col-md-offset-2">
+                    <!-- general form elements -->
+                    <div class="box box-primary">
+                        <!-- /.box-header -->
+                        <!-- form start -->
+                        <form role="form" id="app"  th:action="@{/adminpanel/casbin/casbinupdate}" th:object="${casbinrole}" method="post">
+                            <div class="box-body">
+
+                                <div class="form-group">
+                                    <label for="firstName">Role Name</label>:
+                                    <input required type="text" th:field="*{roleName}" id="firstName" class="form-control" autofocus="autofocus" placeholder="First Name">
+                                    <label th:if="${#fields.hasErrors('roleName')}" th:errors="*{roleName}" th:class="'error'">First Name</label>
+                                </div>
+
+                                <input type="hidden" v-model="selectedEndPoints" th:field="*{urlName}">
+                                <label>Select User Role</label>:
+                                <v-jstree :data="treeData" show-checkbox multiple allow-batch whole-row @item-click="itemClick"></v-jstree>
+                            </div>
+                            <div class="box-footer">
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                        </form>
+                        <script th:inline="javascript">
+                            /*<![CDATA[*/
+
+                            var tree = /*[[${tree}]]*/ 'default';
+                            var selected = /*[[${selectedList}]]*/ 'default';
+                            Vue.use(VJstree)
+                            /*]]>*/
+                        </script>
+
+                        <script>
+
+                            new Vue({
+                                el:"#app",
+                                data: {
+                                    data: tree,
+                                    selectedEndPoints: selected,
+                                },
+                                computed:{
+                                  treeData:function(){
+                                      return JSON.parse(tree);
+                                  }
+                                },
+                                methods: {
+                                    itemClick:function (node, item) {
+                                        if(item.selected){
+                                            var stack = [];
+                                            stack.push(item);
+                                            while(stack.length !== 0){
+                                                var model = stack.pop();
+                                                if(model.children.length === 0){
+                                                    if(!this.selectedEndPoints.includes(model.path))
+                                                        this.selectedEndPoints.push(model.path);
+                                                }
+                                                for(var i=model.children.length-1; i>=0; i--){
+                                                    stack.push(model.children[i]);
+                                                }
+                                            }
+                                        }else{
+                                            var stack = [];
+                                            stack.push(item);
+                                            while(stack.length !== 0){
+                                                var model = stack.pop();
+                                                if(model.children.length === 0){
+                                                    var index = this.selectedEndPoints.indexOf(model.path);
+                                                    if (index > -1){
+                                                        this.selectedEndPoints.splice(index, 1);
+                                                    }
+                                                }
+                                                for(var i=model.children.length-1; i>=0; i--){
+                                                    stack.push(model.children[i]);
+                                                }
+                                            }
+                                        }
+                                        console.log(this.selectedEndPoints);
+                                    }
+                                }
+                            })
+                        </script>
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+        </section>
+        <!-- /.content -->
+    </div>
+</div>
+</body>
+</html>

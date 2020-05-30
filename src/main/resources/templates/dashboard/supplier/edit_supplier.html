@@ -1,0 +1,243 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1 style="text-align:center">
+                Edit Supplier
+            </h1>
+        </section>
+
+        <style>
+            .datepicker>input{
+                width: 364px;
+                height: 30px;
+                margin-top: 5px;
+            }
+        </style>
+
+        <!-- Main content -->
+        <form role="form" class="form-horizontal" id="add_service" method="post" th:action="@{/adminpanel/supplier/updatesupplier/{id}(id=${supplier.getId()})}" th:object="${supplier}" >
+            <input type="hidden" th:field="*{version}">
+            <section class="content">
+                <div class="row">
+
+                    <!-- left column -->
+
+                    <div class="col-md-6">
+                        <!-- general form elements -->
+                        <div class="box box-primary">
+
+                            <div class="box-body">
+                                <input type="hidden" th:field="*{id}">
+
+
+
+                                <div class="form-group">
+                                    <label for="name" class="col-sm-3 control-label">First Name</label>
+                                    <div class="col-sm-9">
+                                        <input required type="text" th:field="*{firstName}" id="name" class="form-control input-sm"  placeholder="Enter first name">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="name1" class="col-sm-3 control-label">Last Name</label>
+                                    <div class="col-sm-9">
+                                        <input required type="text" th:field="*{lastName}" id="name1" class="form-control input-sm"  placeholder="Enter lase name">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label" style="margin-top: 5px;"> Date of Birth</label>
+                                    <div class="col-sm-9">
+                                        <vue-datepicker-local v-model="time" format="YYYY-MM-DD"></vue-datepicker-local>
+                                        <input type="hidden" th:field="*{date}" v-model="dateOfBirth">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="name1" class="col-sm-3 control-label">Email</label>
+                                    <div class="col-sm-9">
+                                        <input required type="email" th:field="*{email}" id="name1" class="form-control input-sm"  placeholder="Enter email">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="name1" class="col-sm-3 control-label">Phone</label>
+                                    <div class="col-sm-9">
+                                        <input required type="text" th:field="*{phoneNo}" id="name1" class="form-control input-sm"  placeholder="Enter phone">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="name1" class="col-sm-3 control-label">Address Line 1</label>
+                                    <div class="col-sm-9">
+                                        <textarea required type="text" th:field="*{addessLine1}" id="name1" class="form-control input-sm"  placeholder="Enter Address Line 1"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="name1" class="col-sm-3 control-label">Address Line 2</label>
+                                    <div class="col-sm-9">
+                                        <textarea required type="text" th:field="*{addessLine2}" id="name1" class="form-control input-sm"  placeholder="Enter Address Line 2"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="name1" class="col-sm-3 control-label">City/District</label>
+                                    <div class="col-sm-9">
+                                        <input required type="text" th:field="*{cityDistrict}" id="name1" class="form-control input-sm"  placeholder="Enter city/district">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="name1" class="col-sm-3 control-label">State</label>
+                                    <div class="col-sm-9">
+                                        <input required type="text" th:field="*{stateProvice}" id="name1" class="form-control input-sm"  placeholder="Enter state">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="parentname" class="col-sm-3 control-label">Postal Code</label>
+
+                                    <div class="col-sm-9">
+                                        <select th:field="*{postalId.id}" class="form-control input-sm">
+                                            <option th:each="postal : ${postals}" id="parentname" th:value="${postal.getId()}" th:text="${postal.getName()}"></option>
+                                            <input type="hidden" name="postalId.version" value="999">
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="parentname1" class="col-sm-3 control-label">Country Code</label>
+
+                                    <div class="col-sm-9">
+                                        <select th:field="*{countryId.id}" class="form-control input-sm">
+                                            <option th:each="country : ${countrys}" id="parentname1" th:value="${country.getId()}" th:text="${country.getName()}"></option>
+                                            <input type="hidden" name="countryId.version" value="999">
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <!-- general form elements -->
+                        <div class="box box-primary">
+
+                            <div class="box-body">
+
+                                <div class="form-group">
+                                    <label for="name" class="col-sm-3 control-label"> Name</label>
+                                    <div class="col-sm-9">
+                                        <input required type="text" th:field="*{name}" id="name" class="form-control input-sm"  placeholder="Enter name">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="name1" class="col-sm-3 control-label"> Website</label>
+                                    <div class="col-sm-9">
+                                        <input required type="text" th:field="*{website}" id="name1" class="form-control input-sm"  placeholder="Enter name">
+                                    </div>
+                                </div>
+
+                                <input type="hidden" v-model="active" th:field="*{active}">
+
+                                <div class="form-group">
+
+                                    <label class="control-label col-sm-3">Active</label>
+                                    <div class="col-sm-9">
+                                        <div class="center">
+                                            <input type="checkbox" th:checked="*{active}" id="cbx" style="display: none;"/>
+
+                                            <label @click="isActive()" for="cbx" class="toggle">
+        <span>
+          <svg width="10px" height="10px" viewBox="0 0 10 10">
+            <path d="M5,1 L5,1 C2.790861,1 1,2.790861 1,5 L1,5 C1,7.209139 2.790861,9 5,9 L5,9 C7.209139,9 9,7.209139 9,5 L9,5 C9,2.790861 7.209139,1 5,1 L5,9 L5,1 Z"></path>
+          </svg>
+        </span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div class="box-footer" style="text-align: center;">
+                                <button class="btn btn-success text-center">Update</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- /.row -->
+            </section>
+        </form>
+        <script th:inline="javascript">
+
+            /*<![CDATA[*/
+            active = /*[[${isActive}]]*/ "";
+            birth = /*[[${birth}]]*/ "";
+            /*]]>*/
+        </script>
+        <script>
+            new Vue({
+                el:'#add_service',
+                data:{
+                    photo:"",
+                    imageData:"",
+                    active: false,
+                    time: new Date(),
+                },
+                created: function(){
+                  this.active = active;
+                  this.time = new Date(Date.parse(birth));
+                },
+                computed:{
+                    dateOfBirth: function(){
+                        return this.time.getFullYear() + '-' +
+                            (this.time.getMonth() +1) + '-' +
+                            this.time.getDate();
+                    },
+                },
+                methods:{
+                    isActive: function(){
+                        this.active = !this.active;
+                    },
+                    imgUpload: function (event) {
+                        var input = event.target;
+                        this.featuredImageFlag = true;
+
+                        if (input.files && input.files[0]) {
+                            var reader = new FileReader();
+                            reader.onload = (e) => {
+                                this.imageData = e.target.result;
+                                this.photo = e.target.result;
+                            }
+                            reader.readAsDataURL(input.files[0]);
+                        }
+                    },
+                    removeImg:function () {
+                        this.imageData = "";
+                    }
+                }
+            })
+        </script>
+
+
+        <!-- /.content -->
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1 style="text-align:center">
+                Show Stock
+            </h1>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <form role="form" id="add_requisition" method="post" th:action="@{/adminpanel/requisitionmaster/updaterequisitionmaster/{id}(id=${stockmaster.getId()})}" th:object="${stockmaster}">
+                <div class="row">
+                    <!-- left column -->
+                    <div class="col-md-12">
+                        <!-- general form elements -->
+                        <div class="box box-primary">
+                            <!-- /.box-header -->
+                            <!-- form start -->
+
+                            <div class="box-body">
+
+                                <table class="table table-condensed" id="table">
+                                    <tr th:each="stock, stat : *{stockDetails}">
+                                        <input type="hidden" th:field="*{stockDetails[__${stat.index}__].productItem.version}" th:value="0">
+
+                                        <td @click.prevent="removeRow(row)"><i  style="display: none; margin-top: 32px; cursor: pointer;" class="fa fa-times"  aria-hidden="true"></i></td>
+                                        <td>
+
+                                            <div class="form-group">
+                                                <label>Product Name</label>
+                                                <select disabled th:field="*{stockDetails[__${stat.index}__].productItem.id}" class="form-control input-sm" th:id="${'productItem.id-'+stat.index}">
+                                                    <option value="">None</option>
+
+                                                    <option th:each="product: ${productList}" th:value="${product.getId()}" th:text="${product.getProductName()}"></option>
+
+                                                </select>
+
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <label for="resquantity">Reserve Quantity</label>
+                                                <input readonly required type="number" th:field="*{stockDetails[__${stat.index}__].availableStock}"  id="resquantity" class="form-control input-sm" autofocus="autofocus">
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <div class="form-group">
+                                                <label>Quantity</label>
+                                                <input readonly required type="number" @input="onQuantityChange" th:field="*{stockDetails[__${stat.index}__].quantity}"  th:id="${'quantity-'+stat.index}" class="form-control input-sm qty1" autofocus="autofocus">
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <div class="form-group">
+                                                <label >Measure</label>
+                                                <select disabled th:field="*{stockDetails[__${stat.index}__].unitOfMeasure}" class="form-control input-sm" th:id="${'unitOfMeasure-'+stat.index}">
+                                                    <option value="KILOGRAM">KILOGRAM</option>
+                                                    <option value="GRAMS">GRAMS</option>
+                                                    <option value="LITER">LITER</option>
+                                                    <option value="PIECE">PIECE</option>
+                                                </select>
+
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <div class="form-group">
+                                                <label >Price</label>
+                                                <input readonly  required type="number"   @input="onPriceChange" th:field="*{stockDetails[__${stat.index}__].prices}"  th:id="${'prices-'+stat.index}" class="form-control input-sm pri1" autofocus="autofocus">
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <div class="form-group">
+                                                <label>Comment</label>
+                                                <input readonly required type="text" th:field="*{stockDetails[__${stat.index}__].comment}"  th:id="${'comment-'+stat.index}" class="form-control input-sm">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="box-footer">
+                                <p><span style="font-size: 13px;" class="label label-success">Total :</span> {{totalPrice}}</p>
+                                <input type="hidden" th:field="*{totalPrices}" v-model="totalPrice">
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="box box-primary">
+                            <div class="box-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="comment">Comment:</label>
+                                            <textarea readonly th:field="*{comment}" class="form-control" rows="5" id="comment"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+
+                                    </div>
+                                    <div class="col-md-3" style="padding: 56px;">
+                                        <!--<button class="btn btn-primary">Sumbit</button>-->
+                                        <a th:href="@{/adminpanel/stockmaster/stockmasterlist}" class="btn btn-success">Back to Stock list</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <script th:inline="javascript">
+
+                /*<![CDATA[*/
+                var allPrice = /*[[${totalPrice}]]*/ 0;
+                var length = /*[[${numberOfDetails}]]*/ 0;
+                /*]]>*/
+            </script>
+            <script>
+                function deleteRow(index) {
+                    console.log(index);
+                    var price = document.querySelector('#prices-'+index).value;
+                    var quantity = document.querySelector('#quantity-'+index).value;
+                    price = price * quantity;
+                    console.log(price);
+                    this.example.subTractTotalPrice(price);
+                    $('#table #row-'+index).remove();
+                }
+                var example = new Vue({
+                    el:'#add_requisition',
+                    data:{
+                        rows: [],
+                        current:0,
+                        totalPrice:0,
+                        price:0,
+                    },
+                    created: function () {
+                        this.totalPrice = allPrice;
+                        if(length > 0)
+                            this.current = length-1;
+                    },
+                    methods:  {
+                        subTractTotalPrice: function(price){
+                            this.totalPrice -= price;
+                        },
+
+                        addRow : function () {
+                            this.rows.splice(this.current+1, 0, {id: this.current+1, product: "", measure:"KILOGRAM", price:0, quantity:0});
+                            this.current++;
+                        },
+                        removeRow : function(row){
+                            var index = this.rows.indexOf(row);
+                            this.rows.splice(index, 1);
+
+
+                            var price = document.querySelector('#prices-'+row.id).value;
+                            var quantity = document.querySelector('#quantity-'+row.id).value;
+                            var sum = price * quantity;
+                            this.totalPrice -= sum;
+                        },
+
+                        onPriceChange: function () {
+                            var sum = 0;
+                            var prices = new Array();
+                            var quantities = new Array();
+
+                            $(".qty1").each(function(){
+                                var quantity = +$(this).val();
+                                quantities.push(quantity);
+                            });
+
+                            $(".pri1").each(function(){
+                                var price = +$(this).val();
+                                prices.push(price);
+                            });
+
+                            for(var i=0; i<prices.length; i++){
+                                var temp = prices[i] * quantities[i];
+                                sum += temp;
+                            }
+
+                            this.totalPrice = sum;
+                        },
+
+                        onQuantityChange: function () {
+                            var sum = 0;
+                            var prices = new Array();
+                            var quantities = new Array();
+
+                            $(".qty1").each(function(){
+                                var quantity = +$(this).val();
+                                quantities.push(quantity);
+                            });
+
+                            $(".pri1").each(function(){
+                                var price = +$(this).val();
+                                prices.push(price);
+                            });
+
+                            for(var i=0; i<prices.length; i++){
+                                var temp = prices[i] * quantities[i];
+                                sum += temp;
+                            }
+
+                            this.totalPrice = sum;
+                        }
+                    }
+                })
+            </script>
+            <!-- /.row -->
+        </section>
+        <!-- /.content -->
+    </div>
+</div>
+
+</body>
+</html>

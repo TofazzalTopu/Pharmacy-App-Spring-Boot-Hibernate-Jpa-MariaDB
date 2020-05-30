@@ -1,0 +1,123 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:th="http://www.thymeleaf.org"
+	layout:decorate="~{fragments/layout}">
+<head>
+<meta charset="UTF-8">
+<title>Title</title>
+</head>
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<p>
+					<a th:href="@{/adminpanel/dashboard/}">Home</a> / <a
+						th:href="@{/orders/list}">Orders</a>
+				</p>
+				<h1 style="text-align: center">Order Details</h1>
+
+			</section>
+
+			<!-- Main content -->
+			<section class="content">
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="box">
+							<!-- /.box-header -->
+							<div class="box-body">
+								<table class="table table-bordered table-striped">
+									<thead>
+										<tr>
+											<th>Order No</th>
+											<th>Customer Name</th>
+											<th>Customer Email</th>
+											<th>Customer Address</th>
+											<th>Order Time</th>
+											<th>Status</th>
+
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td th:text="${orderMaster.getId()}"></td>
+											<td th:text="${orderMaster.getCustomer().getLastName()}"></td>
+											<td th:text="${orderMaster.getCustomer().getEmail()}"></td>
+											<td th:text="${orderMaster.getCustomer().getAddress()}"></td>
+											<td th:text="${orderMaster?.getCreateTime()}"></td>
+											<td th:text="${orderMaster?.getStatus()}">Pending</td>
+										</tr>
+										<tr class="success">
+											<th colspan="3">Prescription 1</th>
+											<th colspan="3">Prescription 2</th>
+
+										</tr>
+										<tr>
+											<td colspan="3" style="width: 50%;"><img
+												th:src="@{'/uploads/'+ ${orderMaster.prescription1}}"
+												class="img-round" style="width: 99%"></td>
+											<td colspan="3" style="width: 50%;"><img
+												th:src="@{'/uploads/'+ ${orderMaster.prescription2}}"
+												class="img-round" style="width: 99%"></td>
+										</tr>
+
+										<tr class="info">
+											<th colspan="6">Drug List</th>
+										</tr>
+
+										<tr>
+											<th>SL</th>
+											<th>Drug Name</th>
+											<th>Unit</th>
+											<th>Unit Price</th>
+											<th>Qty</th>
+											<th>Total Price</th>
+										</tr>
+
+
+										<tr th:each="order,iter : ${orderMaster.orderDetails}">
+											<td th:text="${iter.count}"></td>
+											<td><span th:text="${order.drug.name}"></span> <small><sup><span
+														th:text="${order.drug.dosageForm.name}"> <span
+															th:text="${order.drug.strength}"></span></span></sup></small> in <em><small>
+														<span th:text="${order.drug.generic.name}"></span>
+												</small></em><br /> <span th:text="${order.drug.company.name}"></span></td>
+											<td>Pcs</td>
+											<td th:text="${order.drug.price}"></td>
+											<td th:text="${order.qty}"></td>
+											<td th:text="${order?.total}"></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+
+							<!-- form update -->
+
+							<div class="box-footer  text-center">
+							<!-- <span th:text="${orderMaster.status}"></span> -->
+        
+								<form id="app" role="form" th:action="@{/orders/updateOrder/{id}(id=${orderMaster.getId()})}"
+								th:object="${orderMaster}" method="post">
+									<input type="hidden" th:value="${orderMaster.id}" name="id">
+									<select class="custom-select custom-select-lg" th:field="${orderMaster.status}"
+										id="inlineFormCustomSelect">										
+										<option value="PENDING">PENDING</option>
+										<option value="PROCESSING">PROCESSING</option>
+										<option value="DELIVERED">DELIVERED</option>
+										<option value="CANCELLED">CANCELLED</option>
+										<option value="SUCCESS">SUCCESS</option>
+									</select>
+									<button type="submit" class="btn btn-primary btn-sm" >Update</button>
+								</form>
+
+							</div>
+
+
+
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:th="http://www.thymeleaf.org"
+	layout:decorate="~{fragments/layout}">
+<head>
+<meta charset="UTF-8">
+<title>Title</title>
+</head>
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<p>
+					<a th:href="@{/adminpanel/dashboard/}">Home</a> / <a
+						th:href="@{/demand/list}">Demand</a>
+				</p>
+				<h1 style="text-align: center">Demand Details</h1>
+
+			</section>
+
+			<!-- Main content -->
+			<section class="content">
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="box">
+							<!-- /.box-header -->
+							<div class="box-body">
+								<table class="table table-bordered table-striped">
+									<thead>
+										<tr>
+											<th>Drug Name</th>
+											<th>Priority </th>
+											<th>Remarks</th>
+											<th>Create Date</th>
+
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td th:text="${demand.getDrug().name}"></td>
+											<td th:text="${demand.getPriority() == '1'? 'Urgent' : 'Regular'}"></td>
+											<td th:text="${demand.getRemarks()}"></td>
+											<td th:text="${demand.getCreateDate()}"></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+</body>
+</html>

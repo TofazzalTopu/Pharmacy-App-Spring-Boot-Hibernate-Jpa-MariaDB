@@ -1,0 +1,75 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header" style="text-align: center">
+            <h1>
+                Customer Review List
+            </h1>
+
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <table  class="table table-bordered table-hover table-condensed table-responsive">
+                                <thead>
+                                <tr>
+                                    <th>Action</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Food Quality</th>
+                                    <th>Price Level</th>
+                                    <th>Speed of Service</th>
+                                    <th>Cleanness</th>
+                                    <th>Over all Experience</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="customerreview : ${customerreviewList}">
+                                    <td>
+                                        <a th:href="@{/adminpanel/customerreview/customerreviewedit/{id}(id=${customerreview.getId()})}" class="btn btn-xs btn-success"> <i class="fa fa-pencil-square-o"></i></a>
+                                        <!--<a th:href="@{/adminpanel/service/servicedelete/{id}(id=${service.getServiceId()})}" class="btn"> <i class="fa fa-trash-o"></i> </a>-->
+                                    </td>
+                                    <td th:text="${customerreview?.getFirstName()}"></td>
+                                    <td th:text="${customerreview?.getEmail()}"></td>
+                                    <td th:text="${customerreview?.getFoodQuality().name()}"></td>
+                                    <td th:text="${customerreview?.getPriceLevels().name()}"></td>
+                                    <td th:text="${customerreview?.getSpeedOfService().name()}"></td>
+                                    <td th:text="${customerreview?.getCleanliness().name()}"></td>
+                                    <td th:text="${customerreview?.getOverallExperience().name()}"></td>
+                                    <td th:if="${customerreview?.isActive() == true}"><span class="label label-success">Active</span></td>
+                                    <td th:if="${customerreview?.isActive() == false}"><span class="label label-danger">Inactive</span></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <!--<nav aria-label="Page navigation example" style="float: right">-->
+                                <!--<ul class="pagination justify-content-end">-->
+                                    <!--<li class="page-item">-->
+                                        <!--<a class="page-link" th:href="@{/adminpanel/rooms/roomslist(page=${previous},total=${size})}" tabindex="-1">Previous</a>-->
+                                    <!--</li>-->
+                                    <!--<li class="page-item">-->
+                                        <!--<a class="page-link" th:href="@{/adminpanel/rooms/roomslist(page=${next},total=${size})}">Next</a>-->
+                                    <!--</li>-->
+                                <!--</ul>-->
+                            <!--</nav>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

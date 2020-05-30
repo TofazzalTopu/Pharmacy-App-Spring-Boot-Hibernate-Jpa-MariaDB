@@ -1,0 +1,114 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link id="contextPathHolder" th:data-contextPath="${#httpServletRequest.getContextPath()}"/>
+
+    <script type="text/javascript">
+
+        function getPurchaseList() {
+            var contextPath = $('#contextPathHolder').attr('data-contextPath') ? $('#contextPathHolder').attr('data-contextPath') : '';
+
+            var purchaseNo = $("#purchaseNo").val();
+            var spInvId = $("#spInvId").val();
+            var prNo = "purchaseNo=" + purchaseNo + "&";
+            var spInv = "spInvId=" + spInvId;
+
+            var host = window.location.host
+            var url = "http://"+host + contextPath + "/purchaseReturn/viewPurchaseList?" + prNo + spInv;
+            $(location).attr('href', url); // Using this
+        };
+
+    </script>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <p>
+                <a th:href="@{/adminpanel/dashboard/}">Home</a> / <a
+                    th:href="@{/purchase/addPurchase}">Purchase</a>
+            </p>
+            <h1 style="text-align: center">Purchase Return</h1>
+
+            <form id="app" name="demandForm" role="form"
+                  th:action="@{/purchaseReturn/viewPurchaseList}"
+                  method="GET">
+                <div class="layout--drugs__search col-md-6">
+                    <div class="form-group col-md-4">
+                        <label> Purchase No </label>
+                        <input th:type="text" class='form-control' th:value="${purchaseNo}" id="purchaseNo"
+                               name="purchaseNo">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label> SP Invoice ID </label>
+                        <!--<input th:type="text" class='form-control' th:value="sdff" id="spInvId" name="spInvId">-->
+                        <input th:type="text" class='form-control'
+                               th:value="${spInvId == null || spInvId == '' ? '' : spInvId}" id="spInvId"
+                               name="spInvId">
+                    </div>
+                    <div class="col-auto">
+                        <input type="button" value="Search" class="btn btn-primary" onclick="getPurchaseList()"
+                               name="search"/>
+                    </div>
+                </div>
+            </form>
+            <!--<ul th:each="message : ${messages}">
+                <li th:text="${message}" class="ui error message" />
+            </ul>-->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                <tr class="info">
+                                    <th colspan="11">Purchase List</th>
+                                </tr>
+                                <tr>
+                                    <th>Sl</th>
+                                    <th>Purchase No</th>
+                                    <th>Supplier Name</th>
+                                    <th>Supplier Inv. ID</th>
+                                    <th>Total Amount</th>
+                                    <th>Purchase Date</th>
+                                    <!--<th>Create Time</th>-->
+                                    <th>Action</th>
+
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr th:each="purchaseMaster,iter : ${purchaseMasterList}">
+                                    <td th:text="${iter.count}"></td>
+                                    <td th:text="${purchaseMaster.purchaseNo}"></td>
+                                    <td th:text="${purchaseMaster.suplierName}"></td>
+                                    <td th:text="${purchaseMaster.spInvId}"></td>
+                                    <td th:text="${purchaseMaster.totalAmount}"></td>
+                                    <td th:text="${purchaseMaster?.invDate}"></td>
+                                    <!--<td th:text="${purchaseMaster?.createTime}"></td>-->
+                                    <td>
+                                        <a th:href="@{/purchaseReturn/editPurchaseList/{id}(id=${purchaseMaster.getId()})}">
+                                            Return
+                                        </a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            deleteThisRow();
+        });
+
+        function deleteThisRow() {
+            $(document).on('click', '.delete', function () {
+                $(this).parent().parent('tr').remove();
+            });
+        };
+    </script>
+
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <section class="content-header">
+            <p>
+                <a th:href="@{/adminpanel/dashboard/}">Home</a> / <a
+                    th:href="@{/sales/salesList}">Sales List</a>
+            </p>
+            <h1 style="text-align: center">Sales Details</h1>
+
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <form id="salesReturnForm" name="salesReturnForm" role="form"
+                      th:action="@{/salesReturn/executeSalesReturn}" method="POST">
+                    <input type="hidden" th:value="${salesMasterId}" id="salesMaster" name="salesMaster">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                <tr>
+                                    <th>Sales No.</th>
+                                    <th>Sold By</th>
+                                    <th style="text-align: right;">Sales Amount</th>
+                                    <th>Sales Date</th>
+                                    <th>Create Time</th>
+                                    <th> </th>
+                                    <th> </th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr>
+                                    <td th:text="${salesMaster.salesNo}"></td>
+                                    <td th:text="${salesMaster?.createdBy}"></td>
+                                    <td th:text="${#numbers.formatDecimal(salesMaster.totalAmount, 0, 'COMMA', 2, 'POINT')}"
+                                        style="text-align: right;"></td>
+                                    <td th:text="${salesMaster?.salesDate}"></td>
+                                    <td th:text="${salesMaster?.createTime}"></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+
+                                <tr class="info">
+                                    <th colspan="6">Drug List</th>
+                                </tr>
+                                <tr>
+                                    <th>SL</th>
+                                    <th>Drug Name</th>
+                                    <th style="text-align: center;">Generic Name</th>
+                                    <th style="text-align: center;">Qty</th>
+                                    <th style="text-align: center;">Unit Price</th>
+                                    <th style="text-align: center;">Sold Amount</th>
+                                    <th>Action</th>
+                                </tr>
+                                <tr th:each="pd,iter : ${salesMaster.salesDetails}">
+                                    <td th:text="${iter.count}"></td>
+                                    <td>
+                                        <span th:text="${pd.drug.getName()}"></span>
+                                        <small><sup><span
+                                                th:text="${pd.drug.dosageForm.name}"> <span
+                                                th:text="${pd.drug.strength}"></span></span></sup></small>
+                                        in <em>
+                                        <small>
+                                            <span th:text="${pd.drug.generic.name}"></span>
+                                        </small>
+                                    </em><br/> <span th:text="${pd.drug.company.name}"></span>
+
+                                        <input type="hidden" th:name="${'salesReturnDetails['+iter.index+'].drug'}"
+                                               style="text-align: right;" th:value="${pd?.drug.getId()}">
+                                    </td>
+                                    <td th:text="${pd?.drug.getGeneric().getName()}"></td>
+                                    <td>
+                                        <input type="number" th:name="${'salesReturnDetails['+iter.index+'].salesQty'}"
+                                               id="salesQty" style="text-align: center;" th:value="${pd.salesQty}">
+                                    </td>
+                                    <td th:text="${pd?.drug.price}"></td>
+                                    <td th:text="${pd?.salesAmount}"></td>
+
+                                    <td><input style='text-align: right;' class='delete btn-danger'
+                                               onclick='deleteThisRow()'
+                                               type='button' value='Delete'/></td>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <input type="submit" value="Update" class="btn btn-primary" id="Update" name="Update">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

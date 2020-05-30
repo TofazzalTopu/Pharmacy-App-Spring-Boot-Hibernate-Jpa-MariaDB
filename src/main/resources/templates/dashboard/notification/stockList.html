@@ -1,0 +1,98 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:th="http://www.thymeleaf.org"
+	layout:decorate="~{fragments/layout}">
+<head>
+<meta charset="UTF-8">
+
+<script th:src="@{/assets/js/pms/stock/stockList.js}"></script>
+
+<style type="text/css">
+#overlay {
+	background: #ffffff;
+	color: #666666;
+	position: fixed;
+	height: 100%;
+	width: 100%;
+	z-index: 5000;
+	top: 0;
+	left: 0;
+	float: left;
+	text-align: center;
+	padding-top: 25%;
+}
+</style>
+
+
+</head>
+
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<div class="content-wrapper">
+			<div id="overlay">
+				<img th:src="@{/assets/img/loader.gif}" width="100px">
+				Loading...
+			</div>
+			
+			<section class="content-header">
+				<div class="row">
+						<div class="col-xs-6">Home > Stock > <strong>Stock List </strong></div>						
+						<div class="col-xs-6 text-right" >
+							<p><a th:href="@{/adminpanel/dashboard/}">Home</a> / <a
+								th:href="@{/notification/getStockList}">Low Stock List</a>
+							</p>
+						</div>
+				</div>
+				
+										
+			</section>
+			
+			<section class="content">
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="box">
+							<div class="box-body">
+								<table id="stockTable"
+									class="table table-bordered table-striped">
+									<thead>
+										<tr>
+											<th>SL</th>
+											<th>Drug Details</th>
+											<th style="text-align: right;">Current Stock</th>
+											<th style="text-align: right;">Safety Margin</th>
+											<th>Last Updated</th>
+											<th>History</th>
+										</tr>
+									</thead>
+									<tbody id="myTBody">
+										<tr th:each="stock, iter : ${stockList}">
+											<td th:text="${iter.count}"></td>
+
+											<td><span th:text="${stock.name}"></span> <small><sup><span
+														th:text="${stock.dosageForm}"> <span
+															th:text="${stock.strength}"></span></span></sup></small> in <em><small>
+														<span th:text="${stock.generic}"></span>
+												</small></em><br /> <span th:text="${stock.company}"></span></td>
+
+
+											<!-- <td th:text="${stock.stock}"></td>
+											<td th:text="${stock.getSafetyMargin()}"></td> -->
+											<td th:text="${#numbers.formatDecimal(stock.stock, 0, 'COMMA', 2, 'POINT')}" 
+											style="text-align: right;"></td>
+											<td th:text="${#numbers.formatDecimal(stock.getSafetyMargin(), 0, 'COMMA', 2, 'POINT')}" 
+											style="text-align: right;"></td>
+											<td th:text="${stock.getModifyTime()}"></td>
+											<td><a th:href="@{/stock/medicineInOutHistory/{id}(id=${stock.getId()})}">History</a>  </td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</section>
+		</div>
+	</div>
+</body>
+</html>

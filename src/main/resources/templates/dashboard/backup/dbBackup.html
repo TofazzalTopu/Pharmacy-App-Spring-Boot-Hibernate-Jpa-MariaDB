@@ -1,0 +1,53 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link id="contextPathHolder" th:data-contextPath="${#httpServletRequest.getContextPath()}"/>
+
+    <script type="text/javascript">
+
+        function getPurchaseList() {
+            var contextPath = $('#contextPathHolder').attr('data-contextPath') ? $('#contextPathHolder').attr('data-contextPath') : '';
+
+            var purchaseNo = $("#purchaseNo").val();
+            var spInvId = $("#spInvId").val();
+            var prNo = "purchaseNo=" + purchaseNo + "&";
+            var spInv = "spInvId=" + spInvId;
+
+            var host = window.location.host
+            var url = "http://" + host + contextPath + "/purchaseReturn/viewPurchaseList?" + prNo + spInv;
+            $(location).attr('href', url); // Using this
+        };
+
+    </script>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <input type="button" value="Search" class="btn btn-primary" onclick="getPurchaseList()"
+                                   name="search"/>
+                            <!--<form id="app" name="demandForm" role="form"
+                                  th:action="@{/purchaseReturn/viewPurchaseList}"
+                                  method="GET">
+
+                            </form>-->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

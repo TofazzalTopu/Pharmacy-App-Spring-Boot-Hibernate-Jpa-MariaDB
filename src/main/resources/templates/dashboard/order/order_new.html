@@ -1,0 +1,355 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:th="http://www.thymeleaf.org"
+	layout:decorate="~{fragments/layout}">
+<head>
+<meta charset="UTF-8">
+<title>Title</title>
+
+<link rel="stylesheet" th:href="@{/assets/css/jquery-ui.css}">
+<link rel="stylesheet"
+	href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script th:src="@{/assets/js/jquery/jquery-ui.js}"></script>
+<style type="text/css">
+/* http://docs.jquery.com/UI/Autocomplete#theming*/
+.ui-autocomplete {
+	position: absolute;
+	cursor: default;
+	background: #CCC
+}
+
+/* workarounds */
+html .ui-autocomplete {
+	width: 1px;
+} /* without this, the menu expands to 100% in IE6 */
+.ui-menu {
+	list-style: none;
+	padding: 2px;
+	margin: 0;
+	display: block;
+	float: left;
+}
+
+.ui-menu .ui-menu {
+	margin-top: -3px;
+}
+
+.ui-menu .ui-menu-item {
+	margin: 0;
+	padding: 0;
+	zoom: 1;
+	float: left;
+	clear: left;
+	width: 100%;
+}
+
+.ui-menu .ui-menu-item a {
+	text-decoration: none;
+	display: block;
+	padding: .2em .4em;
+	line-height: 1.5;
+	zoom: 1;
+}
+
+.ui-menu .ui-menu-item a.ui-state-hover, .ui-menu .ui-menu-item a.ui-state-active
+	{
+	font-weight: normal;
+	margin: -1px;
+}
+
+input[type="number"] {
+	text-align: right;
+}
+</style>
+<script>
+	$(function() {
+		function log(message) {
+			$("<div>").text(message).prependTo("#log");
+			$("#log").scrollTop(0);
+		}
+
+		var host = getDomain();
+		var url = host + 'orders/search';
+
+		$("#searchDrug")
+				.autocomplete(
+						{
+							source : function(request, response) {
+								$.ajax({
+									url : url,
+									dataType : "json",
+									data : {
+										name : request.term
+									},
+									success : function(data) {
+										response(data);
+									}
+								});
+							},
+							minLength : 2,
+							classes : {
+								"ui-autocomplete" : "highlight"
+							},
+							select : function(event, ui) {
+								// log( "Selected: " + ui.item.value + " aka " + ui.item.id );
+								
+								var row = $('#selectedDrugBody >tr').length;
+								
+								var tr = "<tr><td>"
+										+ ui.item.name
+										+ " <small><sup>"
+										+ ui.item.dosageForm
+										+ ui.item.strength
+										+ "</sup></small> in <em><small>"
+										+ ui.item.generic
+										+ "</small></em></td> <td>"
+										+ ui.item.company
+										+ "</td> <td><input class='col-xs-4 col-xs-offset-4 drugQtys' name='orderDetails["+row+"].qty' type='number' value='1' />"
+										+"<input class='drugIds' name='orderDetails["+row+"].drug.id' type='hidden' value='"+ui.item.id+"' /></td> <td>"+ui.item.price+"</td> </tr>";
+								$("#selectedDrugBody").append(tr);
+							}
+
+						}).autocomplete("instance")._renderItem = function(ul,
+				item) {
+			var p1 = "<p>" + item.name + " <small><sup>" + item.dosageForm
+					+ item.strength + "</sup></small> in <em><small>"
+					+ item.generic + "</small></em>";
+			var p2 = "<br/>" + item.company + "</p>";
+			return $("<li>").append("<div>" + p1 + p2 + "</div>").appendTo(ul);
+		};
+
+		var urlCs = host + 'orders/customerSearch';
+		$("#seacrCustomer").autocomplete({
+			source : function(request, response) {
+				$.ajax({
+					url : urlCs,
+					dataType : "json",
+					data : {
+						name : request.term
+					},
+					success : function(data) {
+						response(data);
+					}
+				});
+			},
+			minLength : 2,
+			classes : {
+				"ui-autocomplete" : "highlight"
+			},
+			select : function(event, ui) {
+				$("#cName").text(ui.item.firstName + ' ' + ui.item.lastName);
+				$("#cEmail").text(ui.item.email);
+				$("#cAddr").text(ui.item.address);
+				$("#cMobile").text(ui.item.mobileNumber);
+				$("#cPhoto").attr('src', host + 'uploads/' + ui.item.photo);
+				$("#cEmail").append("<input type='hidden' id='cId' name='customer.id' value='"+ ui.item.id+"' />");
+			}
+
+		}).autocomplete("instance")._renderItem = function(ul, item) {
+			var p1 = "<p style='border:1px solid blue'>" + item.username;
+			var p2 = "<br/>" + item.mobileNumber + "</p>";
+			return $("<li>").append("<div>" + p1 + p2 + "</div>").appendTo(ul);
+		};
+		// End of seacrCustomer
+
+	});
+</script>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+			
+				<p>
+					<a th:href="@{/adminpanel/dashboard/}">Home</a> / <a th:href="@{/orders/list}">Orders</a>
+				</p>
+				<h1 style="text-align: center">Add New Order</h1>
+			</section>
+
+			<!-- Main content -->
+			<section class="content">
+				<div class="row">
+					<!-- left column -->
+					<div class="col-md-12">
+						<!-- general form elements -->
+						<div class="box box-primary">
+							<!-- /.box-header -->
+							<form id="app" role="form" th:action="@{/orders/create}"
+								th:object="${orderMaster}" method="post">
+								<!-- <form id="app" role="form" th:action="@{/}" method="post"> -->
+								<!-- /.box-header -->
+
+								<div class="row">
+									<div class="col-sm-6">
+										<div class="form-group">
+											<label for="image">Add Prescription 1: </label> <input
+												required @change="imgUpload" type="file" id="image"
+												accept="image/*" class="form-control form-control-file">
+											<input type="hidden" v-model="photo" name="prescription1">
+										</div>
+										<div class="image-preview"
+											style="overflow: hidden; position: relative;"
+											v-if="imageData.length > 0">
+											<div style="position: relative; overflow: hidden">
+												<img class="preview" :src="imageData"
+													style="width: 100%; background-color: white; border: 1px solid #DDD; padding: 5px;">
+												<a @click.prevent="removeImg" href="#"
+													style="position: absolute; left: 50px; top: 50px; transform: translate(-50%)"><i
+													class="fa fa-times"></i></a>
+											</div>
+										</div>
+
+
+									</div>
+									<div class="col-sm-6">
+										<div class="form-group">
+											<label for="image2">Add Prescription 2: </label> <input
+												@change="imgUpload2" type="file" id="image2"
+												accept="image/*" class="form-control form-control-file">
+											<input type="hidden" v-model="photo2" name="prescription2">
+										</div>
+										<div class="image-preview"
+											style="overflow: hidden; position: relative;"
+											v-if="imageData2.length > 0">
+											<div style="position: relative; overflow: hidden">
+												<img class="preview" :src="imageData2"
+													style="width: 100%; background-color: white; border: 1px solid #DDD; padding: 5px;">
+												<a @click.prevent="removeImg2" href="#"
+													style="position: absolute; left: 50px; top: 50px; transform: translate(-50%)"><i
+													class="fa fa-times"></i></a>
+											</div>
+										</div>
+
+
+
+									</div>
+								</div>
+
+								<!-- search drug -->
+								<hr />
+								<div class="ui-widget text-center">
+									<input id="searchDrug" placeholder="Search drug" />
+								</div>
+								<br />
+								<hr />
+
+
+								<div class="container-fluid">
+									<h3>Drug Details:</h3>
+									<table id="orderTable" class="table">
+										<thead>
+											<tr>
+												<th>Drug Name</th>
+												<th>Company Name</th>
+												<th class="text-center">Qty</th>
+												<th>Unit Price</th>
+											</tr>
+										</thead>
+										<tbody id="selectedDrugBody">
+										</tbody>
+									</table>
+								</div>
+
+
+								<div class="ui-widget text-center">
+									<input id="seacrCustomer" placeholder="Search Customer" />
+								</div>
+
+
+
+								<div class="container-fluid">
+									<h3>Customer Details:</h3>
+									<div class="row">
+										<table id="cstTable" class="table">
+											<thead>
+												<tr>
+													<th>Customer Name</th>
+													<th>Customer Address</th>
+													<th>Email</th>
+													<th>Mobile</th>
+													<th>Picture</th>
+												</tr>
+											</thead>
+
+											<tbody>
+												<tr>
+													<td id="cName" class="col-xs-3"></td>
+													<td id="cAddr" class="col-xs-4"></td>
+													<td id="cEmail" class="col-xs-2"></td>
+													<td id="cMobile" class="col-xs-2"></td>
+													<td class="col-xs-1"><img id="cPhoto" src=""
+														class="img-circle" style="width: 100%;"></td>
+												</tr>
+
+											</tbody>
+										</table>
+									</div>
+								</div>
+								
+								<div class="box-footer  text-center">
+                                	<button type="submit" class="btn btn-primary">Save</button>
+                            	</div>
+                            	
+
+								
+							</form>
+						</div>
+					</div>
+				</div>
+				<!-- /.row -->
+
+				<script>
+				 new Vue({ el:'#app',
+				        data:{
+				            photo:"",
+				            imageData:"",
+				            photo2:"",
+				            imageData2:""
+				        },
+				        methods:{
+				            imgUpload: function (event) {
+				                var input = event.target;
+				                this.featuredImageFlag = true;
+				
+				                if (input.files && input.files[0]) {
+				                    var reader = new FileReader();
+				                    reader.onload = (e) => {
+				                        this.imageData = e.target.result;
+				                        this.photo = e.target.result;
+				                    }
+				                    reader.readAsDataURL(input.files[0]);
+				                }
+				            },
+				            removeImg:function () {
+				                this.imageData = "";
+				            },
+				            imgUpload2: function (event) {
+				                var input = event.target;
+				                this.featuredImageFlag = true;
+				
+				                if (input.files && input.files[0]) {
+				                    var reader = new FileReader();
+				                    reader.onload = (e) => {
+				                        this.imageData2 = e.target.result;
+				                        this.photo2 = e.target.result;
+				                    }
+				                    reader.readAsDataURL(input.files[0]);
+				                }
+				            },
+				            removeImg:function () {
+				                this.imageData2 = "";
+				            }
+				        }
+				    })
+					
+				</script>
+				<!-- /.row -->
+
+
+			</section>
+			<!-- /.content -->
+		</div>
+	</div>
+</body>
+</html>

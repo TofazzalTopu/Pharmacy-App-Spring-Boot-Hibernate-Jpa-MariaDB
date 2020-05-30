@@ -1,0 +1,51 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Category List
+            </h1>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <table  class="table table-bordered table-hover table-condensed">
+                                <thead>
+                                <tr>
+                                    <th>Action</th>
+                                    <th>Category name</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="category, iterator : ${categoriesList}">
+                                    <td>
+                                        <!--<a th:href="@{/adminpanel/servicetype/servicetypedelete/{id}(id=${servicetype.getServiceTypeId()})}" class="btn"> <i class="fa fa-trash-o"></i> </a>-->
+                                        <a th:href="@{/adminpanel/categories/categoriesedit/{id}(id=${category.getId()})}" class="btn btn-xs btn-success"> <i class="fa fa-pencil-square-o"></i></a>
+                                        <!--<a href="" class="btn"> <i class="fa fa-eye" aria-hidden="true"></i></a>-->
+                                    </td>
+                                    <td th:text="${category.getCategoryName()}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

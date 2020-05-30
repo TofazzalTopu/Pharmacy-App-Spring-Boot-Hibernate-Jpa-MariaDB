@@ -1,0 +1,51 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1 style="text-align:center">
+                Edit Country
+            </h1>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <!-- left column -->
+                <div class="col-md-8 col-md-offset-2">
+                    <!-- general form elements -->
+                    <div class="box box-primary">
+                        <!-- /.box-header -->
+                        <!-- form start -->
+                        <form role="form" id="edit_service" method="post" th:action="@{/adminpanel/country/updatecountry/{id}(id=${country.getId()})}" th:object="${country}">
+                            <input type="hidden" th:field="*{version}">
+                            <div class="box-body">
+                                <div class="form-group">
+                                    <label for="name"> Name</label>
+                                    <input required type="text" th:field="*{name}" id="name" class="form-control" autofocus="autofocus" placeholder="Enter name">
+                                </div>
+
+                                <input type="hidden" th:field="*{createdBy}" >
+                            </div>
+                            <div class="box-footer">
+                                <button type="submit" class="btn btn-primary">Update</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+        </section>
+        <!-- /.content -->
+    </div>
+</div>
+
+</body>
+</html>

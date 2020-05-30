@@ -1,0 +1,74 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <section class="content-header">
+            <p>
+                <a th:href="@{/adminpanel/dashboard/}">Home</a> / <a
+                    th:href="@{/salesReturn/salesReturnList}">Sales Return List</a>
+            </p>
+            <h1 style="text-align: center">Sales Return Details List</h1>
+
+        </section>
+
+        <section class="content">
+            <div class="row">
+                <form id="purchaseReturnListForm" name="purchaseReturnListForm" role="form">
+                    <div>
+                        <div class="box">
+                            <div class="box-body">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                    <tr class="info">
+                                        <th colspan="11">Purchase List</th>
+                                    </tr>
+                                    <tr>
+                                        <th>SL</th>
+                                        <th>Drug Name</th>
+                                        <th style="text-align: left;">Generic Name</th>
+                                        <th style="text-align: center;">Qty</th>
+                                        <th style="text-align: center;">Unit Price</th>
+                                        <th style="text-align: center;">Sold Amount</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+                                    <tr th:each="dtls,iter : ${salesReturnDetailsList}">
+                                        <td th:text="${iter.count}"></td>
+                                        <td>
+                                            <a th:href="@{/drugs/{id}(id=${dtls.drug.getId()})}"><span
+                                                    th:text="${dtls.drug.getName()}"></span></a>
+                                            <small><sup><span
+                                                    th:text="${dtls.drug.dosageForm.name}"> <span
+                                                    th:text="${dtls.drug.strength}"></span></span></sup></small>
+                                            in <em>
+                                            <small>
+                                                <span th:text="${dtls.drug.generic.name}"></span>
+                                            </small>
+                                        </em><br/> <span th:text="${dtls.drug.company.name}"></span>
+                                        </td>
+
+                                        <td th:text="${dtls.getDrug().getGeneric().getName()}"></td>
+                                        <td style="text-align: right;" th:text="${dtls.salesQty}"></td>
+                                        <td style="text-align: right;" th:text="${dtls.getDrug().getPrice()}"></td>
+                                        <td style="text-align: right;" th:text="${dtls.salesAmount}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

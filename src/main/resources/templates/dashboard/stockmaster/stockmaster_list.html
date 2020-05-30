@@ -1,0 +1,70 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Stock List
+            </h1>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <table  class="table table-bordered table-hover table-condensed">
+                                <thead>
+                                <tr>
+                                    <th>Action</th>
+                                   
+                                    <th>Created By</th>
+                                    <th>Total Amount</th>
+                                    <th>Qty</th>
+                                    <th>Created Date</th>
+                                    <th>Status</th>
+                                    <th>Comment</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="stock : ${stockmasterList}">
+                                    <td>
+                                        <a th:href="@{/adminpanel/stockmaster/stockmasteredit/{id}(id=${stock.getId()})}" class="btn btn-xs btn-success"> <i class="fa fa-eye" aria-hidden="true"></i></a>
+                                        <!--<a th:href="@{/adminpanel/service/servicedelete/{id}(id=${service.getServiceId()})}" class="btn"> <i class="fa fa-trash-o"></i> </a>-->
+                                    </td>
+                                    <td th:text="${stock?.getCreatedBy()?.getFullName(stock.getCreatedBy())}"></td>
+                                    <td th:text="${stock?.getTotalPrices()}"></td>
+                                    <td th:text="${#dates.format(stock?.getCreateDate(), 'dd-MMM-yyyy')}"></td>
+                                    <td th:text="${stock?.getTokenStage()?.name()}"></td>
+                                    <td th:text="${stock?.getComment()}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <!--<nav aria-label="Page navigation example" style="float: right">-->
+                                <!--<ul class="pagination justify-content-end">-->
+                                    <!--<li class="page-item">-->
+                                        <!--<a class="page-link" th:href="@{/adminpanel/rooms/roomslist(page=${previous},total=${size})}" tabindex="-1">Previous</a>-->
+                                    <!--</li>-->
+                                    <!--<li class="page-item">-->
+                                        <!--<a class="page-link" th:href="@{/adminpanel/rooms/roomslist(page=${next},total=${size})}">Next</a>-->
+                                    <!--</li>-->
+                                <!--</ul>-->
+                            <!--</nav>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

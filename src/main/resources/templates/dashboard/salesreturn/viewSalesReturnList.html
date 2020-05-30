@@ -1,0 +1,62 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <section class="content-header">
+            <p>
+                <a th:href="@{/adminpanel/dashboard/}">Home</a> / <a
+                    th:href="@{/sales/salesList}">Sales List</a>
+            </p>
+            <h1 style="text-align: center">Sales Return Details</h1>
+
+        </section>
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                <tr>
+                                    <th>Sales No.</th>
+                                    <th>Sold By</th>
+                                    <th style="text-align: right;">Sales Amount</th>
+                                    <th>Sales Date</th>
+                                    <th>Create Time</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr th:each="pd, iter : ${salesReturnList}">
+                                    <td th:text="${pd?.getSalesMaster().getSalesNo()}"></td>
+                                    <td th:text="${pd?.getSalesMaster().getCreatedBy()}"></td>
+                                    <td th:text="${#numbers.formatDecimal(pd?.getSalesMaster().getTotalAmount(), 0, 'COMMA', 2, 'POINT')}"
+                                        style="text-align: right;"></td>
+                                    <td th:text="${pd?.getSalesMaster().getSalesDate()}"></td>
+                                    <td th:text="${pd?.getSalesMaster().getCreateTime()}"></td>
+                                    <td>
+                                        <a th:href="@{/salesReturn/showSalesReturnDetails/{id}(id=${pd.getId()})}">
+                                            Details
+                                        </a>
+                                    </td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

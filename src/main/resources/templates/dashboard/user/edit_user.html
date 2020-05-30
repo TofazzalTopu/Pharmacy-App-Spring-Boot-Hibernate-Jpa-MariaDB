@@ -1,0 +1,149 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1 style="text-align:center">
+                Edit User
+            </h1>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <!-- left column -->
+                <div class="col-md-8 col-md-offset-2">
+                    <!-- general form elements -->
+                    <div class="box box-primary">
+                        <!-- /.box-header -->
+                        <!-- form start -->
+                        <form id="app" role="form"  th:action="@{/adminpanel/user/userupdate/{id}(id=${user.getId()})}" th:object="${user}" method="post">
+                            <div class="box-body">
+
+                                <div class="form-group">
+                                    <label for="firstName">First Name</label>:
+                                    <input required type="text" th:field="*{firstName}" id="firstName" class="form-control" autofocus="autofocus" placeholder="First Name">
+                                    <label th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" th:class="'error'">First Name</label>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="lastName">Last Name</label>:
+                                    <input required type="text" th:field="*{lastName}" id="lastName" class="form-control" autofocus="autofocus" placeholder="Last Name">
+                                    <label th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" th:class="'error'">Last Name</label>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="email">Email</label>:
+                                    <input readonly type="email" th:field="*{email}" id="email" class="form-control" autofocus="autofocus" placeholder="Email">
+                                    <label th:if="${#fields.hasErrors('email')}" th:errors="*{email}" th:class="'error'">Email</label>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="image">Image</label>
+                                    <input @change="imgUpload" type="file" id="image" class="form-control form-control-file">
+                                    <input type="hidden" v-model="photo" th:field="*{photo}" name="photo">
+                                </div>
+
+                                <div class="image-preview" style="overflow:hidden; position: relative;" v-if="imageData.length > 0">
+                                    <div style="position:relative; overflow:hidden">
+                                        <img class="preview" :src="imageData" style="width:100px;height:100px;background-color:white; border: 1px solid #DDD; padding: 5px;">
+                                        <a @click.prevent="removeImg" href="#" style="position: absolute;left:50px;top:50px;transform: translate(-50%)"><i
+                                                class="fa fa-times"></i></a>
+                                    </div>
+                                </div>
+
+                                <div v-if="imageShow">
+                                    <img style="width:100px;height:100px;background-color:white; border: 1px solid #DDD; padding: 5px;" th:src=" @{'/uploads/'+ ${user.getPhoto()}}">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="password">Password</label>:
+                                    <input required type="password" th:field="*{password}" id="password" class="form-control" autofocus="autofocus" placeholder="Password">
+                                    <label th:if="${#fields.hasErrors('password')}" th:errors="*{password}" th:class="'error'">Password</label>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="mobile">Mobile</label>:
+                                    <input required type="text" th:field="*{mobileNumber}" id="mobile" class="form-control" autofocus="autofocus" placeholder="Mobile">
+                                    <label th:if="${#fields.hasErrors('mobileNumber')}" th:errors="*{mobileNumber}" th:class="'error'">Mobile</label>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="address">Address</label>:
+                                    <input required type="text" th:field="*{address}" id="address" class="form-control" autofocus="autofocus" placeholder="Address">
+                                    <label th:if="${#fields.hasErrors('address')}" th:errors="*{address}" th:class="'error'">Address</label>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="parentname">Branch Name</label>
+                                    <select th:field="*{branch.id}" class="form-control" id="parentname">
+                                        <option value="">None</option>
+
+                                        <option th:each="branch: ${branchlist}" th:value="${branch.getId()}" th:text="${branch.getName()}"></option>
+
+                                    </select>
+
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="address">Select User Role</label>:
+                                    <ul>
+                                        <li th:each="role : ${rolelist}">
+                                            <div class="ui checkbox">
+                                                <input type="checkbox" th:field="*{selectedRole}" th:value="${role.getId()}">
+                                                <label th:text="${role.name}"></label>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                            <div class="box-footer">
+                                <button type="submit" class="btn btn-primary">Update</button>
+                            </div>
+                        </form>
+                        <script>
+                            new Vue({
+                                el: '#app',
+                                data:{
+                                    photo:"",
+                                    imageData:"",
+                                    imageShow: true,
+                                },
+                                methods:{
+                                    imgUpload: function (event) {
+                                        this.imageShow = false;
+                                        var input = event.target;
+
+                                        if (input.files && input.files[0]) {
+                                            var reader = new FileReader();
+                                            reader.onload = (e) => {
+                                                this.imageData = e.target.result;
+                                                this.photo = e.target.result;
+                                            }
+                                            reader.readAsDataURL(input.files[0]);
+                                        }
+                                    },
+                                    removeImg:function () {
+                                        this.imageData = "";
+                                    }
+                                },
+                            })
+                        </script>
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+        </section>
+        <!-- /.content -->
+    </div>
+</div>
+</body>
+</html>

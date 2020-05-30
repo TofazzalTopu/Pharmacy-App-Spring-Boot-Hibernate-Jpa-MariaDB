@@ -1,0 +1,78 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:th="http://www.thymeleaf.org"
+	layout:decorate="~{fragments/layout}">
+<head>
+<meta charset="UTF-8">
+<title>Title</title>
+</head>
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<p>
+					<a th:href="@{/adminpanel/dashboard/}">Home</a> / <a
+						th:href="@{/demand/list}">Orders</a>
+				</p>
+				<h1 style="text-align: center">Demand Details</h1>
+
+			</section>
+
+			<!-- Main content -->
+			<section class="content">
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="box">
+							<!-- /.box-header -->
+							<div class="box-body">
+								<table class="table table-bordered table-striped">
+									<thead>
+										<tr>
+											<th>Drug Name</th>
+											<th>Priority </th>
+											<th>Remarks</th>
+
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td> <input th:type="hidden" name="id" id="id" th:value="${demand.getId()}">  </td>
+											<td> <input th:type="text" name="remarks" id="remarks" th:value="${demand.getRemarks()}">  </td>
+											<td> <input th:type="text" name="priority" id="priority" th:value="${demand.getPriority()}">  </td>
+
+											<!--<td th:text="${demand.getPriority()}"></td>-->
+											<!--<td th:text="${demand.getRemarks()}"></td>-->
+										</tr>
+
+									</tbody>
+								</table>
+							</div>
+
+							<!-- form update -->
+
+							<div class="box-footer  text-center">
+							<!-- <span th:text="${orderMaster.status}"></span> -->
+        
+								<form id="app" role="form" th:action="@{/demand/updateDemand/{id}(id=${demand.getId()})}"
+								th:object="${demand}" method="post">
+									<input type="hidden" th:value="${demand.id}" name="id">
+									<!--<select class="custom-select custom-select-lg" th:field="${demand.status}"
+										id="inlineFormCustomSelect">										
+										<option value="PENDING">PENDING</option>
+										<option value="PROCESSING">PROCESSING</option>
+										<option value="DELIVERED">DELIVERED</option>
+										<option value="CANCELLED">CANCELLED</option>
+										<option value="SUCCESS">SUCCESS</option>
+									</select>-->
+									<button type="submit" class="btn btn-primary btn-sm" >Update</button>
+								</form>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1 style="text-align:center">
+                Stock
+            </h1>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <form role="form" id="add_requisition" method="post" th:action="@{/adminpanel/stockmaster/savestockmaster}" th:object="${stockmaster}" >
+            <div class="row">
+                <!-- left column -->
+                <div class="col-md-12">
+                    <!-- general form elements -->
+                    <div class="box box-primary">
+                        <!-- /.box-header -->
+                        <!-- form start -->
+
+                            <div class="box-body">
+
+                              <table class="table table-condensed">
+                                  <tr>
+                                      <div class="form-group">
+                                          <div class="col-sm-1" style="padding: 4px;">
+                                              <label >Requisition</label>
+                                          </div>
+
+                                          <div class="col-sm-4" style="margin-bottom: 20px;">
+                                              <select @change="onRequisitionChange($event)" th:field="*{requisitionMaster.id}" class="form-control input-sm" id="parentname1">
+                                                  <option value="">Select one</option>
+                                                  <option th:each="requisition : ${requisitionlist}" th:value="${requisition?.getId()}" th:text="${  'Req- ' + requisition.getId()+ ' + ' + requisition?.getCreatedBy()?.getFullName(requisition?.getCreatedBy()) + ' + ' + #dates.format(requisition?.getCreateDate(), 'dd-MMM-yyyy')}"></option>
+                                              </select>
+                                          </div>
+                                          <input type="hidden" name="requisitionMaster.version" value="999">
+
+                                      </div>
+                                  </tr>
+
+
+                                  <tr v-for="(row, index) in rows">
+                                      <td @click.prevent="removeRow(row)"><i style="color: red; margin-top: 32px; cursor: pointer;" class="fa fa-times"  aria-hidden="true"></i></td>
+
+                                      <td>
+                                          <div class="form-group">
+                                              <label>Product Name</label>
+                                                  <!--<option th:each="product: ${productList}" th:value="${product.getId()}" th:text="${product.getProductName()}"></option>-->
+                                                  <input readonly :value="row.productItem.productName" :id="'quantity-'+index" class="form-control input-sm" >
+                                                  <input  type="hidden" :value="row.productItem.id" :name="'stockDetails['+index+'].productItem.id'">
+                                                  <input type="hidden" :id="'stockDetails'+index+'.productItem.version'" :name="'stockDetails['+index+'].productItem.version'" value="0">
+                                          </div>
+                                      </td>
+                                      <td>
+                                          <div class="form-group">
+                                              <label for="resquantity">Reserve Quantity</label>
+                                              <input v-model="row.availableStock" readonly required type="number"  id="resquantity" class="form-control input-sm">
+                                          </div>
+                                      </td>
+
+                                      <td>
+                                          <div class="form-group">
+                                              <label>Quantity</label>
+                                              <input v-model="row.quantity" required type="number" @input="onQuantityChange" :id="'quantity-'+index" class="form-control input-sm qty1"  :name="'stockDetails['+index+'].quantity'" value="0">
+                                          </div>
+                                      </td>
+
+                                      <td>
+                                          <div class="form-group">
+                                              <label >Measure</label>
+                                              <select  v-model="row.unitOfMeasure" class="form-control input-sm" :id="'unitOfMeasure-'+index" :name="'stockDetails['+index+'].unitOfMeasure'">
+                                                  <option value="KILOGRAM">KILOGRAM</option>
+                                                  <option value="GRAMS">GRAMS</option>
+                                                  <option value="LITER">LITER</option>
+                                                  <option value="PIECE">PIECE</option>
+                                              </select>
+
+                                          </div>
+                                      </td>
+
+                                      <td>
+                                          <div class="form-group">
+                                              <label >Price</label>
+                                              <input v-model="row.prices" required type="number"  @input="onPriceChange" :id="'prices-'+index" class="form-control input-sm pri1"  :name="'stockDetails['+index+'].prices'" value="0.0">
+                                          </div>
+                                      </td>
+
+                                      <td>
+                                          <div class="form-group">
+                                              <label>Comment</label>
+                                              <input v-model="row.comment"  required type="text" :id="'comment-'+index" class="form-control input-sm"  :name="'stockDetails['+index+'].comment'" value="">
+                                          </div>
+                                      </td>
+                                  </tr>
+
+                              </table>
+                                <!--<button style="float: right;" @click.prevent="addRow" class="btn btn-sm btn-success"> <i class="fa fa-plus" aria-hidden="true"></i>Add</button>-->
+                            </div>
+                            <div class="box-footer">
+                                <p><span style="font-size: 13px;" class="label label-success">Total :</span> {{totalPrice}}</p>
+                                <input type="hidden" th:field="*{totalPrices}" v-model="totalPrice">
+                            </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box box-primary">
+                        <div class="box-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="comment">Comment:</label>
+                                        <textarea th:field="*{comment}" class="form-control" rows="5" id="comment"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+
+                                </div>
+                                <div class="col-md-3" style="padding: 56px;">
+                                    <button class="btn btn-primary">Sumbit</button>
+                                    <button class="btn btn-primary btn-danger">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+            </form>
+            <script>
+
+                var example = new Vue({
+                    el: '#add_requisition',
+                    data:{
+                        rows:[],
+                        current:0,
+                        totalPrice:0,
+                        price:0,
+                        quantity:0,
+                    },
+                    methods:{
+                        onRequisitionChange: function(e){
+                             var host = window.location.host;
+                            this.$http.get('http://'+host+'/adminpanel/stockmaster/api/'+ e.target.value, {credentials : true, headers:{
+                                    'X-CSRF-TOKEN' : window.csrfToken,
+                                }})
+                                .then(res => {
+                                    console.log(res);
+                                    this.rows = res.body.requisitionDetails;
+                                    this.totalPrice = res.body.totalPrices;
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                })
+                        },
+                        addRow : function () {
+                            this.rows.splice(this.current+1, 0, {id: this.current+1, product: "", measure:"KILOGRAM", price:0, quantity:0});
+                            this.current++;
+                        },
+                        removeRow : function(row){
+                            var index = this.rows.indexOf(row);
+                            this.rows.splice(index, 1);
+
+
+                            var price = document.querySelector('#prices-'+row.id).value;
+                            var quantity = document.querySelector('#quantity-'+row.id).value;
+                            var sum = price * quantity;
+                            this.totalPrice -= sum;
+                        },
+
+                        onPriceChange: function () {
+                            var sum = 0;
+                            var prices = new Array();
+                            var quantities = new Array();
+
+                            $(".qty1").each(function(){
+                                var quantity = +$(this).val();
+                                quantities.push(quantity);
+                            });
+
+                            $(".pri1").each(function(){
+                                var price = +$(this).val();
+                                prices.push(price);
+                            });
+
+                            for(var i=0; i<prices.length; i++){
+                                var temp = prices[i] * quantities[i];
+                                sum += temp;
+                            }
+
+                            this.totalPrice = sum;
+                        },
+
+                        onQuantityChange: function () {
+                            var sum = 0;
+                            var prices = new Array();
+                            var quantities = new Array();
+
+                            $(".qty1").each(function(){
+                                var quantity = +$(this).val();
+                                quantities.push(quantity);
+                            });
+
+                            $(".pri1").each(function(){
+                                var price = +$(this).val();
+                                prices.push(price);
+                            });
+
+                            for(var i=0; i<prices.length; i++){
+                                var temp = prices[i] * quantities[i];
+                                sum += temp;
+                            }
+
+                            this.totalPrice = sum;
+                        }
+                    },
+                })
+            </script>
+        </section>
+        <!-- /.content -->
+    </div>
+</div>
+</body>
+</html>

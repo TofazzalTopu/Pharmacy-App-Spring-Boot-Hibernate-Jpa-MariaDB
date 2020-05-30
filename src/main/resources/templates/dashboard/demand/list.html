@@ -1,0 +1,143 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title> Demand List </title>
+    <link id="contextPathHolder" th:data-contextPath="${#httpServletRequest.getContextPath()}"/>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var pr = "${priority}";
+            // alert("${drugName}");
+            console.log("${drugName}");
+        });
+        function getDemandList() {
+
+            var priority = $("#priority").val();
+            var drugName = $("#drugName").val();
+            var drg = "drugName="+drugName+"&";
+            var pr = "priority="+priority;
+
+            var contextPath = $('#contextPathHolder').attr('data-contextPath') ? $('#contextPathHolder').attr('data-contextPath') : '';
+            var host = window.location.host
+            var url = "http://" + host + contextPath + "/demand/getDemandListByName?"+ drg+pr;
+            $(location).attr('href', url); // Using this
+        }
+
+        function getDemandList2() {
+            var priority = $("#priority").val();
+            var drugName = $("#drugName").val();
+            var row = "";
+
+            $.ajax({
+                url: "/pms/demand/getDemandListByName",
+                type: "GET",
+                data: {drugName: drugName, priority: priority},
+                dataType: 'json',
+                contentType: "application/json",
+                success: function (data, textStatus, jQxhr) {
+                    console.log("success== ");
+                    console.log("data== " + alert(JSON.stringify(data)));
+
+                    $('#myTBody').html('');
+                    // $('#myTBody').html(data);
+
+                    $.each(data, function (index, obj) {
+                        alert(JSON.stringify(obj));
+
+                        row += "<tr><td>" + obj.priority + "</td><td>" + obj.createDate + "</td><td>" + obj.remarks + "</td></tr>";
+
+                    });
+                    alert(row);
+
+                    $("#myTBody tbody").append(row);
+
+                },
+                error: function (data, jqXhr, textStatus, errorThrown) {
+                    console.log("error== "+ textStatus);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <p>
+                <a th:href="@{/adminpanel/dashboard/}">Home</a> / <a
+                    th:href="@{/demand/createDemand}">Create Demand</a>
+            </p>
+
+            <h1 style="text-align: center">Demand List</h1>
+            <form id="app" name="demandForm" role="form"
+                  th:action="@{/demand/getDemandListByName}"
+                  method="GET">
+                <div class="layout--drugs__search col-md-6">
+                    <div class="form-group col-md-4">
+                        <label> Drug Name </label>
+                        <input th:type="text" class='form-control' th:value="${drugName}" id="drugName" name="drugName">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label> Priority </label>
+                        <select class='form-control' name='priority' id='priority'  th:value="${drugName}">
+                            <option value='1'>Urgent</option>
+                            <option value='2'>Regular</option>
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <!--<input type="submit" value="Search" class="btn btn-primary" id="search" name="search">-->
+                        <input type="button" value="Search" class="btn btn-primary" onclick="getDemandList()" name="search"/>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <table id="myTable" class="table table-bordered table-striped">
+                                <thead>
+                                <tr>
+                                    <th>Drug Name</th>
+                                    <th>Priority</th>
+                                    <th>Create Date</th>
+                                    <th>Remarks</th>
+                                    <th>View</th>
+                                </tr>
+                                </thead>
+                                <tbody id="myTBody">
+                                <tr th:each="demand : ${demandList}">
+                                    <td th:text="${demand.getDrug().name}"></td>
+                                    <td th:text="${demand.getPriority() == '1'? 'Urgent' : 'Regular'}"></td>
+                                    <td th:text="${demand.getCreateDate()}"></td>
+                                    <td th:text="${demand.getRemarks()}"></td>
+
+                                    <td>
+                                        <a th:href="@{/demand/showDemand/{id}(id=${demand.getId()})}"
+                                           class="btn" style="color:#3c8dbc; padding: 0;">
+                                            <span class="fa-stack">
+													  <i class="fa fa-square-o fa-stack-2x"></i>
+													  <i class="fa fa-eye fa-stack-1x"></i>
+													</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

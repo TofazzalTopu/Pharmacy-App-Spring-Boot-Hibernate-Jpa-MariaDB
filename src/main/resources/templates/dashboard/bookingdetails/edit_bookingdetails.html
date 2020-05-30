@@ -1,0 +1,531 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1 style="text-align:center">
+                Booking Details
+            </h1>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <!-- left column -->
+                <form id="app" role="form"  method="post" th:action="@{/adminpanel/bookingdetails/updatebookingdetails/{id}(id=${bookingdetails.getId()})}" th:object="${bookingdetails}">
+                    <div class="col-md-8">
+
+                        <div class="box box-primary">
+                            <div class="box-body">
+                                <div class="form-group">
+                                    <label for="guest">Number of guest</label>
+                                    <input readonly name="Name"  type="number" class="form-control" th:field="*{numberOfGuest}" id="guest"  placeholder="Enter guest number">
+                                </div>
+
+                                <input type="hidden" th:field="*{bDate}" v-model="selectedBookingDate">
+                                <input type="hidden" th:field="*{fDate}" v-model="selectedFunctionDate">
+                                <input type="hidden" th:field="*{fStartTime}" v-model="selectedStartTime">
+                                <input type="hidden" th:field="*{fEndTime}" v-model="selectedEndTime">
+
+
+                                <input type="hidden" th:field="*{clientId}" v-model="selectedClientId">
+                                <input type="hidden" th:field="*{functionId}" v-model="selectedFunctionId">
+                                <input type="hidden" th:field="*{conventionId}" v-model="selectedConventionId">
+
+                                <input type="hidden" th:field="*{listOfFoodId}" v-model="selectedFoodId">
+                                <input type="hidden" th:field="*{listOfFacilityId}" v-model="selectedFacilityId">
+
+                                <input type="hidden" th:field="*{totalAmount}" v-model="totalAmount">
+                                <input type="hidden" th:field="*{advancedAmount}" v-model="advancedAmountData">
+                                <input type="hidden" th:field="*{discountAmount}" v-model="discountAmountData">
+
+                                <div class="row">
+
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label>Booking Date</label>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <vue-datepicker-local v-model="bookingDate" format="YYYY-MM-DD"></vue-datepicker-local>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label>Function Date</label>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <vue-datepicker-local v-model="functionDate" format="YYYY-MM-DD"></vue-datepicker-local>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="row" style="margin-top: 10px;">
+
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label>Function Start Time</label>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <vue-datepicker-local v-model="functionStartTime" format="YYYY-MM-DD HH:mm:ss"></vue-datepicker-local>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label>Function End Time</label>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <vue-datepicker-local v-model="functionEndTime" format="YYYY-MM-DD HH:mm:ss"></vue-datepicker-local>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="box box-primary">
+
+                            <div class="box-body">
+                                <h4 class="text-center"><span class="label label-success">Invoice</span></h4>
+                                <p v-if="selectedClient" ><strong>Customer Name: </strong>{{ selectedClient.name }}</p>
+                                <table class="table table-condensed">
+                                       <tr>
+                                           <td v-if="selectedFunction"><strong>Function: </strong>{{selectedFunction.name}}</td>
+                                           <td v-if="selectedFunction">{{selectedFunction.price}}</td>
+                                       </tr>
+                                       <tr>
+                                           <td v-if="selectedConventionHall"><strong>Convention Hall: </strong>{{selectedConventionHall.name}}</td>
+                                           <td v-if="selectedConventionHall">{{selectedConventionHall.price}}</td>
+                                       </tr>
+                                       <tr>
+                                           <td v-if="selectedFacilities"><strong>Facilities: </strong></td>
+                                           <td v-if="selectedFacilities">{{ facilitiesPrice }}</td>
+                                       </tr>
+                                       <tr>
+                                           <td v-if="selectedFoodItemss"><strong>Food Menu</strong></td>
+                                           <td v-if="selectedFoodItemss">{{foodMenuPrice}}</td>
+                                       </tr>
+                                       <tr>
+                                           <td><strong>Total Price</strong></td>
+                                           <td>{{totalAmount}}</td>
+                                       </tr>
+                                       <tr>
+                                           <td><strong>Discount Amount</strong></td>
+                                           <td>{{discountAmount}}</td>
+                                       </tr>
+                                       <tr>
+                                           <td><strong>Amount Paid</strong></td>
+                                           <td>{{advancedCalculate}}</td>
+                                       </tr>
+                                       <tr>
+                                           <td><hr></td>
+                                           <td><hr></td>
+                                       </tr>
+                                       <tr>
+                                           <td><strong>Due Amount</strong></td>
+                                           <td>{{dueAmountCalculate}}</td>
+                                       </tr>
+                                </table>
+                            </div>
+                            <div class="box-footer">
+                                <a class="btn btn-success" th:href="@{/adminpanel/bookingdetails/bookingdetailslist}">Back to List</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+
+                        <div class="box box-primary">
+                            <div class="box-body">
+                                <div>
+                                    <label class="typo__label"><span class="label label-success">Transaction List</span></label>
+                                    <a style="float: right;" class="btn btn-xs btn-primary openmodale">Add Transaction</a>
+                                    <hr>
+                                    <!--<div v-for="(transaction, index) in transactionList">-->
+                      <!--<pre>-->
+<!--SL: {{ index+1 }}-->
+<!--Date: {{ transaction.date }}-->
+<!--Amount: {{ transaction.amount }}-->
+                          <!--&lt;!&ndash;<span class="label label-danger" style="cursor: pointer; font-size: 11px;" @click.prevent="removeSelection(room)">Remove</span>&ndash;&gt;-->
+                      <!--</pre>-->
+                                    <!--</div>-->
+                                    <div>
+                                        <table class="table table-condensed table-bordered" style="text-align: center;">
+                                            <tr>
+                                                <td>SL</td>
+                                                <td>Date</td>
+                                                <td>Amount</td>
+                                            </tr>
+                                            <tr v-for="(transaction, index) in transactionList">
+                                                <td>{{index+1}}</td>
+                                                <td>{{transaction.date}}</td>
+                                                <td>{{transaction.amount}}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                    <div class="modale" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-header">
+                                                <h2>Add Transaction</h2>
+                                                <a href="#" class="btn-close closemodale" aria-hidden="true">&times;</a>
+                                            </div>
+                                            <div class="modal-body">
+                                                <input v-model.number="transactionAmount" style="text-align: center;" type="number" name="u" placeholder="Enter amount" size="20" /><br>
+                                            </div>
+                                            <div class="modal-footer">
+
+
+                                                <a href="#" class="btn btn-success submitmodale" @click="addTransaction()" id="btn_ingresar">Submit</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- /Modal -->
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="box box-primary">
+                            <div class="box-body">
+                                <div>
+                                    <label class="typo__label"><span class="label label-success">Client Name</span></label>
+                                    <hr>
+                                    <div v-if="selectedClient">
+                      <pre>
+Mobile: {{ selectedClient.mobile }}
+Address: {{ selectedClient.address }}
+                      </pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="box box-primary">
+                            <div class="box-body">
+                                <div>
+                                    <label class="typo__label"><span class="label label-success">Function Name</span></label>
+                                    <hr>
+                                    <div v-if="selectedFunction">
+                      <pre>
+Price: {{ selectedFunction.price }}
+                      </pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="box box-primary">
+                            <div class="box-body">
+                                <div>
+                                    <label class="typo__label"><span class="label label-success">Convention Hall</span></label>
+                                    <hr>
+                                    <div v-if="selectedConventionHall">
+                      <pre>
+Capacity: {{ selectedConventionHall.capacity }}
+Price: {{ selectedConventionHall.price }}
+                      </pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="box box-primary">
+                            <div class="box-body">
+                                <div>
+                                    <label class="typo__label"><span class="label label-success">Facilities</span></label>
+                                    <hr>
+                                    <div v-for="facility in selectedFacilities">
+                      <pre>
+Name: {{ facility.name }}
+Price: {{ facility.price }}
+                      </pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="box box-primary">
+                            <div class="box-body">
+                                <div>
+                                    <label class="typo__label"><span class="label label-success">FoodItems</span></label>
+                                    <hr>
+                                    <div v-for="item in selectedFoodItemss">
+                      <pre>
+Name: {{ item.name }}
+Price: {{ item.price }}
+                      </pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </form>
+                <script th:inline="javascript">
+                    /*<![CDATA[*/
+                    var clients = /*[[${clientlist}]]*/ [];
+                    var conventionhalls = /*[[${conventionlist}]]*/  [];
+                    var transactionlist = /*[[${transactionList}]]*/  [];
+                    var facilities = /*[[${facilities}]]*/  [];
+                    var FoodItemss = /*[[${FoodItemss}]]*/  [];
+                    var functions = /*[[${functions}]]*/  [];
+                    var advancedAmount = /*[[${advancedAmount}]]*/ 0;
+                    var discountAmount = /*[[${discountAmount}]]*/ 0;
+                    var totalAmount = /*[[${totalAmount}]]*/ 0;
+
+                    var bookingDate = /*[[${bookingDate}]]*/ "";
+                    var id = /*[[${id}]]*/ "";
+                    var functionDate = /*[[${functionDate}]]*/ "";
+                    var functionStartTime = /*[[${functionStartTime}]]*/ "";
+                    var functionEndTime = /*[[${functionEndTime}]]*/ "";
+
+                    /*]]>*/
+                </script>
+                <script>
+                    new Vue({
+                        el: "#app",
+                        components: {
+                            Multiselect: window.VueMultiselect.default
+                        },
+                        data:{
+                            discountAmount:0,
+                            totalAmount:0,
+                            transactionAmount:0,
+
+                            bookingDate: new Date(),
+                            functionDate: new Date(),
+                            functionStartTime: new Date(),
+                            functionEndTime: new Date(),
+
+                            selectedClient: null,
+                            selectedConventionHall:null,
+                            selectedFunction: null,
+                            selectedFacilities:[],
+                            selectedFoodItemss:[],
+                            transactionList:[],
+
+                            clientOptions: [],
+                            conventionHallOptions: [],
+                            functionOptions: [],
+                            facilitiesOptions: [],
+                            FoodItemssOptions:[]
+                        },
+                        mounted: function(){
+                            this.bookingDate = new Date(Date.parse(bookingDate));
+                            this.functionDate = new Date(Date.parse(functionDate));
+                            this.functionStartTime = new Date(Date.parse(functionStartTime));
+                            this.functionEndTime = new Date(Date.parse(functionEndTime));
+
+                            this.advancedAmount = advancedAmount;
+                            this.discountAmount = discountAmount;
+                            this.totalAmount = totalAmount;
+                        },
+                        created: function () {
+                            this.clientOptions = JSON.parse(clients);
+                            this.selectedClient = this.clientOptions[0];
+
+                            this.functionOptions = JSON.parse(functions);
+                            this.selectedFunction = this.functionOptions[0];
+
+                            this.conventionHallOptions = JSON.parse(conventionhalls);
+                            this.selectedConventionHall = this.conventionHallOptions[0];
+
+                            this.FoodItemssOptions = JSON.parse(FoodItemss);
+                            this.selectedFoodItemss = this.FoodItemssOptions;
+
+                            this.facilitiesOptions = JSON.parse(facilities);
+                            this.selectedFacilities = this.facilitiesOptions;
+
+                            this.transactionList = JSON.parse(transactionlist);
+                        },
+                        methods:{
+                            addTransaction: function(){
+                                if(this.transactionAmount == 0){
+                                    alert("0 can't be inserted");
+                                    return;
+                                }
+                                if(this.transactionAmount > this.dueAmountCalculate){
+                                    alert("Amount greater than due amount");
+                                    return;
+                                }
+                                 var host = window.location.host;
+                            this.$http.post('http://'+host+'/adminpanel/bookingdetail/api/addtransaction', {
+                                    id:id,
+                                    amount:this.transactionAmount,
+                                    date: this.transactionTime,
+                                }, {credentials : true, headers:{
+                                        'X-CSRF-TOKEN' : window.csrfToken,
+                                    }}).then(res => {
+                                    console.log(res);
+                                    this.transactionList = res.body;
+                                }).catch(err => {
+                                    console.log(err);
+                                })
+                            },
+                        },
+                        computed: {
+                            dueAmountCalculate:function(){
+                                return this.totalAmount - this.advancedCalculate;
+                            },
+                            transactionTime:function (){
+                                var date = new Date();
+                                return date.getFullYear() + '-' +
+                                    (date.getMonth() +1) + '-' +
+                                    date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes();
+                            },
+                            selectedClientId: function(){
+                                if(this.selectedClient){
+                                    return this.selectedClient.id;
+                                }
+                                return 0;
+                            },
+                            selectedFunctionId: function(){
+                                if(this.selectedFunction){
+                                    return this.selectedFunction.id;
+                                }
+                                return 0;
+                            },
+                            selectedConventionId: function(){
+                                if(this.selectedConventionHall) {
+                                    return this.selectedConventionHall.id;
+                                }
+                                return 0;
+                            },
+                            selectedFacilityId: function(){
+                                return this.selectedFacilities.map(item => {return item.id});
+                            },
+                            selectedFoodId: function(){
+                                return this.selectedFoodItemss.map(item => {return item.id});
+                            },
+                            selectedStartTime: function(){
+                                return this.functionStartTime.getFullYear() + '-' +
+                                    (this.functionStartTime.getMonth() +1) + '-' +
+                                    this.functionStartTime.getDate() + ' ' + this.functionStartTime.getHours() + ':' + this.functionStartTime.getMinutes();
+                            },
+                            selectedEndTime: function(){
+                                return this.functionEndTime.getFullYear() + '-' +
+                                    (this.functionEndTime.getMonth() +1) + '-' +
+                                    this.functionEndTime.getDate() + ' ' + this.functionEndTime.getHours() + ':' + this.functionEndTime.getMinutes();
+                            },
+                            selectedFunctionDate: function(){
+                                return this.functionDate.getFullYear() + '-' +
+                                    (this.functionDate.getMonth() +1) + '-' +
+                                    this.functionDate.getDate();
+                            },
+                            selectedBookingDate: function(){
+                                return this.bookingDate.getFullYear() + '-' +
+                                    (this.bookingDate.getMonth() +1) + '-' +
+                                    this.bookingDate.getDate();
+                            },
+                            facilitiesPrice: function () {
+                                var price = 0;
+                                for(var i=0; i<this.selectedFacilities.length; i++){
+                                    price = price + parseFloat(this.selectedFacilities[i].price);
+                                }
+                                return price;
+                            },
+                            foodMenuPrice: function () {
+                                var price = 0;
+                                for(var i=0; i<this.selectedFoodItemss.length; i++){
+                                    price = price + parseFloat(this.selectedFoodItemss[i].price);
+                                }
+                                return price;
+                            },
+                            totalAmountCalculate: function () {
+                                var totalAmount = 0;
+                                totalAmount = this.facilitiesPrice + this.foodMenuPrice;
+
+                                if(this.selectedFunction){
+                                    totalAmount = totalAmount + parseFloat(this.selectedFunction.price);
+                                }
+                                if(this.selectedConventionHall){
+                                    totalAmount = totalAmount + parseFloat(this.selectedConventionHall.price);
+                                }
+                                return totalAmount;
+                            },
+                            subToatalAmount : function () {
+                                var totalAmount = 0;
+                                totalAmount = this.facilitiesPrice + this.foodMenuPrice;
+
+                                if(this.selectedFunction){
+                                    totalAmount = totalAmount + parseFloat(this.selectedFunction.price);
+                                }
+                                if(this.selectedConventionHall){
+                                    totalAmount = totalAmount + parseFloat(this.selectedConventionHall.price);
+                                }
+                                if(this.advancedAmount != ""){
+                                    totalAmount = totalAmount - parseFloat(this.advancedAmount);
+                                }
+                                if(this.discountAmount != ""){
+                                    totalAmount = totalAmount - parseFloat(this.discountAmount);
+                                }
+                                return totalAmount;
+                            },
+                            advancedAmountData : function () {
+                                if(this.advancedAmount != ""){
+                                    return parseFloat(this.advancedAmount);
+                                }
+                                return 0;
+
+                            },
+                            discountAmountData : function () {
+                                if(this.discountAmount != ""){
+                                    return parseFloat(this.discountAmount);
+                                }
+                                return 0;
+                            },
+                            advancedCalculate: function () {
+                                var total = 0;
+                                for(var i=0; i<this.transactionList.length; i++){
+                                    console.log(this.transactionList[i].amount);
+                                    total += this.transactionList[i].amount;
+
+                                }
+                                return total;
+                            }
+
+                        }
+                    })
+                </script>
+            </div>
+            <!-- /.row -->
+        </section>
+        <!-- /.content -->
+    </div>
+    <script type="text/javascript">
+        $('.openmodale').click(function (e) {
+            console.log("Click is working")
+            e.preventDefault();
+            $('.modale').addClass('opened');
+        });
+        $('.closemodale').click(function (e) {
+            e.preventDefault();
+            $('.modale').removeClass('opened');
+        });
+        $('.submitmodale').click(function (e) {
+            e.preventDefault();
+            $('.modale').removeClass('opened');
+        });
+    </script>
+</div>
+</body>
+</html>

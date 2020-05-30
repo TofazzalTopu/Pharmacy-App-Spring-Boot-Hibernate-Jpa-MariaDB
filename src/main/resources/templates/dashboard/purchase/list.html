@@ -1,0 +1,119 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:th="http://www.thymeleaf.org"
+	layout:decorate="~{fragments/layout}">
+<head>
+<meta charset="UTF-8">
+<title>Title</title>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script> 
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<script th:src="@{/assets/js/pms/purchase/purchaseList.js}"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" /> 
+<style type="text/css">
+ #overlay {
+     background: #ffffff;
+     color: #666666;
+     position: fixed;
+     height: 100%;
+     width: 100%;
+     z-index: 5000;
+     top: 0;
+     left: 0;
+     float: left;
+     text-align: center;
+     padding-top: 25%;
+ }
+</style>
+
+</head>
+<body>
+	<div layout:fragment="content" th:remove="tag">
+	
+		<div class="content-wrapper">
+		
+			<div id="overlay">
+			    <img th:src="@{/assets/img/loader.gif}" width="100px">  Loading...
+			</div>
+		
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<div class="row">
+						<div class="col-xs-6">Home > Purchase > <strong>Purchase List </strong></div>						
+						<div class="col-xs-6 text-right" >
+							<p><a th:href="@{/adminpanel/dashboard/}">Home</a> / <a
+								th:href="@{/purchase/addPurchase}">Add Purchase</a>
+							</p>
+						</div>
+				</div>			
+				
+				<p style="text-align: center">Date Range Query:  <input id="pmsDateRangePicker" readonly="readonly"></p>
+										
+			</section>
+
+			<!-- Main content -->
+			<section class="content">
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="box">
+							<!-- /.box-header -->
+							<div class="box-body">
+								<table id="purchaseTable" class="table table-bordered table-striped">
+									<thead>
+										<tr>
+											<th>ID</th>
+											<th>Supplier Name</th>
+											<th>SP Invoice No</th>
+											
+											<th>Purchase Date</th>
+											<th>Create By</th>
+											<th style="text-align: right;">Paid Amount</th>
+											<th>Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="purchase : ${purchaseMasterList}">
+											<td th:text="${purchase.id}"></td>
+											<td th:text="${purchase.suplierName}"></td>
+											<td th:text="${purchase.spInvId}"></td>
+											
+											<td th:text="${purchase.invDate}"></td>
+											<td th:text="${purchase?.createdBy}"></td>
+											<!-- <td th:text="${purchase.netPayable}"></td> -->
+											<td th:text="${#numbers.formatDecimal(purchase.netPayable, 0, 'COMMA', 2, 'POINT')}"  style="text-align: right;"></td>
+
+											<td>
+												<!-- <a href="" --> <a
+												th:href="@{/purchase/showPurchase/{id}(id=${purchase.id})}"
+												class="btn" style="color: #3c8dbc; padding: 0;"> <span
+													class="fa-stack"> <i
+														class="fa fa-square-o fa-stack-2x"></i> <i
+														class="fa fa-eye fa-stack-1x"></i>
+												</span>
+											</a> <!-- <a th:href="@{/purchase/deletePurchase/{id}(id=${order.getId()})}"  onclick="deletePurchase()"  -->
+												<a
+												th:href="@{/purchase/updatePurchase/{id}(id=${purchase.getId()})}"
+												class="btn " style="color: #3c8dbc; padding: 0;"> <span
+													class="fa-stack" style="color: red"> <i
+														class="fa fa-square-o fa-stack-2x" style="color: red"></i>
+														<i class="fa fa-trash fa-stack-1x" style="color: red"></i>
+												</span>
+											</a>
+											</td>
+
+
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+	
+	
+	
+	
+</body>
+
+</html>

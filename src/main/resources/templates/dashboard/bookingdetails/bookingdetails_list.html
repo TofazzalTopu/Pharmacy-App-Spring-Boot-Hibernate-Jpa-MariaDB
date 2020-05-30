@@ -1,0 +1,145 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Booking List
+            </h1>
+            <ol class="breadcrumb">
+                <li><a style="color: white" th:href="@{/adminpanel/bookingdetails/addbookingdetails}" class="btn btn-success">New Booking</a></li>
+            </ol>
+        </section>
+
+        <!-- Main content -->
+        <section class="content" id="app">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <table  id="example2" class="table table-responsive table-bordered table-hover table-condensed">
+                                <thead>
+                                <tr>
+                                    <th width="69px;">Action</th>
+                                    <th>Customer Name</th>
+                                    <th>Booking Date</th>
+                                    <th>Function Date</th>
+                                    <th>Function Start Time</th>
+                                    <th>Function End Time</th>
+                                    <th>Number of Person</th>
+                                    <th>Discount</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="booking, iterator : ${bookingdetailsList}">
+
+                                    <td>
+                                        <a class="btn btn-xs btn-primary" th:onclick="'javascript:printt(\'' + ${iterator.index+1} + '\')'"> <i class="fa fa-print" aria-hidden="true"></i></a>
+                                        <a th:href="@{/adminpanel/bookingdetails/bookingdetailsedit/{id}(id=${booking.getId()})}" class="btn btn-xs btn-success"> <i class="fa fa-pencil-square-o"></i> </a>
+                                    </td>
+                                    <td th:text="${booking.getClient().getName()}"></td>
+                                    <td th:text="${#dates.format(booking?.getBookingDate(), 'dd-MMM-yyyy')}"></td>
+                                    <td th:text="${#dates.format(booking?.getFunctionDate(), 'dd-MMM-yyyy')}"></td>
+                                    <td th:text="${#dates.format(booking?.getFunctionStartTime(), 'dd-MMM-yyyy HH:mm')}"></td>
+                                    <td th:text="${#dates.format(booking?.getFunctionEndTime(), 'dd-MMM-yyyy HH:mm')}"></td>
+                                    <td th:text="${booking?.getNumberOfGuest()}"></td>
+                                    <td th:text="${booking?.getDiscountAmount()}"></td>
+                                    <td th:text="${booking?.getTotalAmount()}"></td>
+                                    <td th:if="${booking?.getStatus().equals('PAID')}"><span class="label label-success">PAID</span></td>
+                                    <td th:if="${booking?.getStatus().equals('PARTIAL')}"><span class="label label-warning">PARTIAL</span></td>
+                                    <td th:if="${booking?.getStatus().equals('UNPAID')}"><span class="label label-danger">UNPAID</span></td>
+                                    <td style="display: none;">
+                                        <div th:attr="id=${iterator.index+1}" style="margin-top: 10px;">
+                                            <h5 style="text-align: center;">Trisha Convention Center</h5>
+                                            <h5 style="float: right;">Invoice</h5>
+                                            <table class="table table-condensed">
+                                                <tr>
+                                                    <td>Cutomer Name</td>
+                                                    <td th:text="${booking?.getClient()?.getName()}"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Function Start Time</td>
+                                                    <td th:text="${#dates.format(booking?.getFunctionStartTime(), 'dd-MMM-yyyy HH:mm')}"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Function End Time</td>
+                                                    <td th:text="${#dates.format(booking?.getFunctionEndTime(), 'dd-MMM-yyyy HH:mm')}"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Function Name</td>
+                                                    <td th:text="${booking?.getLookupFunction()?.getName()}"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Number of guest</td>
+                                                    <td th:text="${booking?.getNumberOfGuest()}"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Total Amount</td>
+                                                    <td th:text="${booking?.getTotalAmount()}"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Discount Amount</td>
+                                                    <td th:text="${booking?.getDiscountAmount()}"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Advanced Amount</td>
+                                                    <td th:text="${booking?.getAdvancedAmount()}"></td>
+                                                </tr>
+                                            </table>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <script>
+            function printt(id) {
+                test.printtt(id);
+            }
+
+            const options = {
+                name: '_blank',
+                specs: [
+                    'scrollbars=yes'
+                ],
+                styles: [
+                    'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css',
+                    'https://unpkg.com/kidlat-css/css/kidlat.css',
+                    'margin-top:20px;'
+                ]
+            }
+
+            Vue.use(VueHtmlToPaper, options);
+            var test = new Vue({
+                el: '#app',
+                data:{
+                    show: true,
+                    id:0,
+                },
+                methods:{
+                    printtt:function (id) {
+                        console.log(id);
+                        this.$htmlToPaper(id, options);
+                    }
+                }
+            })
+        </script>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title> Stock List </title>
+</head>
+
+
+<body>
+<div layout:fragment="content" th:remove="tag">
+<script type="text/javascript">
+	$(document).ready(function() {
+	    $('#stockTable').DataTable({
+	    	aaSorting: [ [0, 'desc'] ]
+	    });
+	} );
+</script>
+    <div class="content-wrapper">
+        <section class="content-header">
+            <p>
+                <a th:href="@{/adminpanel/dashboard/}">Home</a> / <a
+                    th:href="@{/notification/getStockList}">Low Stock List</a>
+            </p>
+            
+            <h1 style="text-align: center">Stock List</h1>
+
+            <section class="content">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="box">
+                            <div class="box-body">
+                                <table id="stockTable" class="table table-bordered table-striped">
+                                    <thead>
+                                    <tr>
+                                     	<th>SL</th>
+                                        <th>Drug Details</th>
+                                       
+                                        <!-- <th>Dosage Form</th> -->
+                                        <th>Current Stock</th>
+                                        <th>Safety Margin</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="myTBody"> 
+                                    <tr th:each="stock, iter : ${stockList}">
+                                   		<td th:text="${iter.count}"></td>
+                                   		
+                                        <td><span th:text="${stock.drug.name}"></span> <small><sup><span
+														th:text="${stock.drug.dosageForm.name}"> <span
+															th:text="${stock.drug.strength}"></span></span></sup></small> in <em><small>
+														<span th:text="${stock.drug.generic.name}"></span>
+												</small></em><br /> <span th:text="${stock.drug.company.name}"></span></td>
+                                        
+                                        
+                                        <td th:text="${stock.getQty()}"></td>
+                                        <td th:text="${stock.getDrug().getSafetyMargin()}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link id="contextPathHolder" th:data-contextPath="${#httpServletRequest.getContextPath()}"/>
+
+    <script type="text/javascript">
+
+        function DbBackup() {
+            var contextPath = $('#contextPathHolder').attr('data-contextPath') ? $('#contextPathHolder').attr('data-contextPath') : '';
+            /*var host = window.location.host
+             var url = "http://" + host + contextPath + "/backup/executeBackup?";
+             $(location).attr('href', url); // Using this
+             */
+
+            $.ajax({
+                url: "/" + contextPath + "/backup/executeBackup",
+                type: "GET",
+                // data: {drugName: drugName, priority: priority},
+                dataType: 'json',
+                contentType: "application/json",
+                success: function (data, textStatus, jQxhr) {
+                    console.log("success== ");
+                    console.log("data== " + alert(JSON.stringify(data)));
+                    alert(JSON.stringify(data));
+                },
+                error: function (data, jqXhr, textStatus, errorThrown) {
+                    alert(JSON.stringify(data))
+                    console.log("error== " + textStatus);
+                }
+            });
+        };
+    </script>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <!--<input type="button" value="DB Backup" class="btn btn-primary" onclick="getPurchaseList()"
+                                   name="search"/>-->
+                            <!--<form id="app" name="demandForm" role="form"
+                                  th:action="@{/purchaseReturn/viewPurchaseList}"
+                                  method="GET">
+
+                            </form>-->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <input type="button" value="DB Backup" class="btn btn-primary" onclick="DbBackup()"
+                                   name="backup"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>
+</body>
+</html>

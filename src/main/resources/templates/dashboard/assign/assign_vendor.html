@@ -1,0 +1,64 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+	<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1 style="text-align:center">
+        Add Vendor
+      </h1>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="row">
+        <!-- left column -->
+        <div class="col-md-8 col-md-offset-2">
+          <!-- general form elements -->
+          <div class="box box-primary">
+            <!-- /.box-header -->
+            <!-- form start -->
+            <form role="form"  method="post" th:action="@{/adminpanel/orders/assiginvendor/orderupdate/{id}(id=${order.getId()})}" th:object="${order}">
+              <div class="box-body">
+                <div class="form-group">
+                  <label for="name">Order No</label>
+                  <input name="Name" th:field="*{id}"  type="text" class="form-control" id="name" placeholder="Enter name">
+                </div>
+                
+                <!--<div class="form-group">-->
+                  <!--<label for="name">Vendor Location</label>-->
+                  <!--<select class="form-control">-->
+					  <!--<option value="volvo">Volvo</option>-->
+					  <!--<option value="saab">Saab</option>-->
+					  <!--<option value="mercedes">Mercedes</option>-->
+					  <!--<option value="audi">Audi</option>-->
+				  <!--</select>-->
+                <!--</div>-->
+                
+                <div class="form-group">
+                  <label for="name">Vendor Name</label>
+                  <select th:field="*{vendor.vendorid}" class="form-control">
+					  <option th:each="ven : ${vendorList}" th:value="${ven.getVendorid()}" th:text="${ven.getName()}"></option>
+				  </select>
+                </div>
+              </div>
+              <div class="box-footer">
+                <button type="submit" class="btn btn-primary">Assign</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- /.row -->
+    </section>
+    <!-- /.content -->
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sc="http://www.w3.org/1999/xhtml">
+<body>
+<th:block th:fragment="header">
+    <header class="main-header">
+        <a th:href="@{/adminpanel/dashboard}" class="logo">
+            <span class="logo-mini"><b>PMS</b></span>
+            <span class="logo-lg" th:text="#{homepage.menu.adminPanel}"></span>
+        </a>
+        <nav class="navbar navbar-static-top">
+            <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+                <span class="sr-only">Toggle navigation</span>
+            </a>
+            <div class="navbar-custom-menu">
+                <ul class="nav navbar-nav">
+                    <!-- Messages: style can be found in dropdown.less-->
+                    <!-- User Account: style can be found in dropdown.less -->
+
+                    <li id="notifDiv" class="dropdown notifications-menu">
+                        <a th:href="@{/notification/getStockList}" id="notificationUrl" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-bell-o"></i>
+                            <span id="notification" class="label label-warning">
+                                   0
+                            </span>
+                        </a>
+                    </li>
+
+                    <li class="dropdown user user-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="name">
+                            <img th:src="@{'/uploads/'+ ${image}}" class="user-image" alt="User Image">
+                            <span class="hidden-xs">{{fullname}}</span>
+                        </a>
+
+                        <script th:inline="javascript">
+                            /*<![CDATA[*/
+                            var name = /*[[${fullname}]]*/ '';
+                            /*]]>*/
+                        </script>
+                        <script>
+                            $(document).ready(function () {
+                                getNotificationCount();
+                                $("#notifDiv").click(function () {                                	
+                                	var notificationUrl = document.getElementById('notificationUrl').href;
+                                    $(location).attr('href', notificationUrl);
+                                });
+
+                            });
+                            new Vue({
+                                el: '#name',
+                                data: {
+                                    fullname: '',
+                                },
+                                mounted: function () {
+                                    this.fullname = name;
+                                }
+                            });
+
+                            function getNotificationCount() {
+                                $.ajax({
+                                    url: "/pms/notification/getNotificationCount",
+                                    type: "GET",                                    
+                                    success: function (data, textStatus, jQxhr) {
+                                        $('#notification').html(data);
+                                    },
+                                    error: function (data, jqXhr, textStatus, errorThrown) {
+                                        console.log("error== " + textStatus);
+                                    }
+                                });
+                            }
+
+                        </script>
+
+                        <ul class="dropdown-menu">
+                            <!-- User image -->
+                            <li class="user-header">
+                                <img th:src="@{'/uploads/'+ ${image}}" class="img-circle" alt="User Image">
+
+                                <p th:text="${fullname}"></p>
+                            </li>
+                            <!-- Menu Body -->
+                            <!-- Menu Footer-->
+                            <li class="user-footer">
+                                <div class="pull-left">
+                                    <a th:href="@{/adminpanel/lock/lockmysession}" class="btn btn-default btn-flat">Lock
+                                        Profile</a>
+                                </div>
+                                <div class="pull-right">
+                                    <form method="post" th:action="@{/logout}">
+                                        <button class="btn btn-default btn-flat">Log out</button>
+                                    </form>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- Control Sidebar Toggle Button -->
+                </ul>
+            </div>
+
+            <!--<div class="navbar-custom-menu">-->
+            <!--<ul class="nav navbar-nav">-->
+            <!--<li class="dropdown messages-menu">-->
+            <!--<form method="post" th:action="@{/logout}">-->
+            <!--<button style="margin-right: 5px;margin-top: 8px;" class="btn btn-primary btn-success">Log out</button>-->
+            <!--</form>-->
+            <!--</li>-->
+            <!--</ul>-->
+            <!--</div>-->
+
+
+        </nav>
+    </header>
+</th:block>
+</body>
+</html>

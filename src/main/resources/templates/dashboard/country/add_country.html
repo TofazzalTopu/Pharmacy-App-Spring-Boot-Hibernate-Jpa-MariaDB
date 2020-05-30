@@ -1,0 +1,116 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1 style="text-align:center">
+                Add Country
+            </h1>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <!-- left column -->
+                <div class="col-md-8 col-md-offset-2">
+                    <!-- general form elements -->
+                    <div class="box box-primary">
+                        <!-- /.box-header -->
+                        <!-- form start -->
+                        <form role="form" id="add_service" method="post" th:action="@{/adminpanel/country/savecountry}" th:object="${country}" >
+                            <div class="box-body">
+
+                                <div class="form-group">
+                                    <label for="name"> Name</label>
+                                    <input required type="text" th:field="*{name}" id="name" class="form-control" autofocus="autofocus" placeholder="Enter name">
+                                </div>
+
+                            </div>
+                            <div class="box-footer">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
+                        <script>
+                            var example = new Vue({
+                                el: '#add_service',
+                                data:{
+                                    photo:"",
+                                    imageData:"",
+                                    activeBorder:'',
+                                    roomNumber:0,
+                                    showText:false,
+
+                                    mainText: "",
+                                    detailsText: "",
+                                    showSpinner:false,
+                                },
+                                methods:{
+                                    imgUpload: function (event) {
+                                        var input = event.target;
+                                        this.featuredImageFlag = true;
+
+                                        if (input.files && input.files[0]) {
+                                            var reader = new FileReader();
+                                            reader.onload = (e) => {
+                                                this.imageData = e.target.result;
+                                                this.photo = e.target.result;
+                                            }
+                                            reader.readAsDataURL(input.files[0]);
+                                        }
+                                    },
+                                    removeImg:function () {
+                                        this.imageData = "";
+                                    },
+
+                                    checkUsername:_.debounce(function (e) {
+                                        this.showSpinner = true;
+                                        this.showText = false;
+                                        this.roomNumber = e.target.value;
+                                         var host = window.location.host;
+                            this.$http.get('http://'+host+'/adminpanel/rooms/checkroom/'+ e.target.value)
+                                            .then(res => {
+                                                this.sleep(500);
+                                                this.showSpinner = false;
+                                                if(!res.body){
+                                                    this.showText = false;
+                                                    this.activeBorder = '';
+                                                }else {
+
+                                                    this.showText = true;
+                                                    this.activeBorder = '1px solid red';
+                                                }
+                                            })
+                                            .catch(err => {
+                                                this.showSpinner = false;
+                                            })
+                                    }, 500),
+                                    sleep: function (milliseconds) {
+                                        var start = new Date().getTime();
+                                        for (var i = 0; i < 1e7; i++) {
+                                            if ((new Date().getTime() - start) > milliseconds){
+                                                break;
+                                            }
+                                        }
+                                    }
+                                },
+                                mounted:function(){
+                                },
+                            })
+                        </script>
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+        </section>
+        <!-- /.content -->
+    </div>
+</div>
+</body>
+</html>

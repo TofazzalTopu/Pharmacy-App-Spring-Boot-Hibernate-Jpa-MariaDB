@@ -1,0 +1,100 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <p>
+                <a th:href="@{/adminpanel/dashboard/}">Home</a> /
+                <a th:href="@{/salesReturn/salesReturnList}">Sales Return List</a>
+            </p>
+            <h1 style="text-align: center">Sales Return Details</h1>
+
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                <tr>
+
+                                    <th>Sales No.</th>
+                                    <th>Sold By</th>
+                                    <th style="text-align: right;">Sales Amount</th>
+                                    <th>Sales Date</th>
+                                    <th>Create Time</th>
+
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr>
+
+                                    <td th:text="${salesReturn.getSalesMaster().getSalesNo()}"></td>
+                                    <td th:text="${salesReturn.getSalesMaster().getCreatedBy()}"></td>
+                                    <td th:text="${#numbers.formatDecimal(salesReturn.getSalesMaster().getTotalAmount(), 0, 'COMMA', 2, 'POINT')}"
+                                        style="text-align: right;"></td>
+                                    <td th:text="${salesReturn.getSalesMaster().getSalesDate()}"></td>
+                                    <td th:text="${salesReturn.getSalesMaster().getCreateTime()}"></td>
+
+                                </tr>
+
+                                <tr class="info">
+                                    <th colspan="6">Drug List</th>
+                                </tr>
+
+                                <tr>
+                                    <th>SL</th>
+                                    <th>Drug Name</th>
+                                    <th style="text-align: left;">Generic Name</th>
+                                    <th style="text-align: center;">Qty</th>
+                                    <th style="text-align: center;">Unit Price</th>
+                                    <th style="text-align: center;">Sold Amount</th>
+
+
+                                </tr>
+
+
+                                <tr th:each="pd, iter : ${salesReturnList}">
+                                    <td th:text="${iter.count}"></td>
+                                    <td>
+                                        <a th:href="@{/drugs/{id}(id=${pd.drug.getId()})}">
+                                            <span th:text="${pd.drug.name}"></span>
+                                        </a>
+                                        <small><sup><span
+                                                th:text="${pd.drug.dosageForm.name}"> <span
+                                                th:text="${pd.drug.strength}"></span></span></sup></small>
+                                        in <em>
+                                        <small>
+                                            <span th:text="${pd.drug.generic.name}"></span>
+                                        </small>
+                                    </em><br/> <span th:text="${pd.drug.company.name}"></span></td>
+
+                                    <td th:text="${pd.drug.generic.name}"></td>
+                                    <td th:text="${pd.salesQty}" style="text-align: right;"></td>
+                                    <td th:text="${pd?.drug.price}" style="text-align: right;"></td>
+                                    <td th:text="${pd?.salesAmount}" style="text-align: right;"></td>
+
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

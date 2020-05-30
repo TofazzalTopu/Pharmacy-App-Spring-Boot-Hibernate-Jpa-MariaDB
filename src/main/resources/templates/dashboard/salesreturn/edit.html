@@ -1,0 +1,104 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            deleteThisRow();
+        });
+
+        function deleteThisRow() {
+            $(document).on('click', '.delete', function () {
+                $(this).parent().parent('tr').remove();
+            });
+        };
+    </script>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <section class="content-header">
+            <p>
+                <a th:href="@{/adminpanel/dashboard/}">Home</a> / <a
+                    th:href="@{/purchase/addPurchase}">Purchase</a>
+            </p>
+            <h1 style="text-align: center">Purchase Return</h1>
+
+        </section>
+
+        <section class="content">
+            <div class="row">
+                <form id="purchaseReturnForm" name="purchaseReturnForm" role="form"
+                      th:action="@{/purchaseReturn/updatePurchase}" method="POST">
+                    <input type="hidden" th:value="${purchaseId}" id="purchaseMaster" name="purchaseMaster">
+                    <div>
+                        <div class="box">
+                            <!-- /.box-header -->
+                            <div class="box-body">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                    <tr class="info">
+                                        <th colspan="11">Purchase List</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Sl</th>
+                                        <th>Drug Name</th>
+                                        <th>Generic</th>
+                                        <th>Box Qty</th>
+                                        <th>Pack Size</th>
+                                        <th>Bonus Qty</th>
+                                        <th>Extra Qty</th>
+                                        <th>Total Amount</th>
+
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+                                    <tr th:each="dtls,iter : ${purchaseDetails}">
+                                        <td th:text="${iter.count}"></td>
+                                        <td>
+                                            <span  th:text="${dtls.drug.getName()}"></span>
+                                            <input type="hidden" th:name="${'purchaseReturnDetails['+iter.index+'].drug'}" style="text-align: right;" th:value="${dtls.drug.getId()}">
+                                        </td>
+                                        <td th:text="${dtls.drug.getGeneric().getName()}"></td>
+
+                                        <td>
+                                            <input type="number" th:name="${'purchaseReturnDetails['+iter.index+'].boxQty'}" id="boxQty" style="text-align: right;" th:value="${dtls.boxQty}">
+                                        </td>
+                                        <td>
+                                            <input type="number" th:name="${'purchaseReturnDetails['+iter.index+'].packSize'}" id="packSize" style="text-align: right;" th:value="${dtls.packSize}">
+                                        </td>
+                                        <td>
+                                            <input type="number"  th:name="${'purchaseReturnDetails['+iter.index+'].bonusQty'}" id="bonusQty" style="text-align: right;" th:value="${dtls.bonusQty}">
+                                        </td>
+                                        <td>
+                                            <input type="number" th:name="${'purchaseReturnDetails['+iter.index+'].extraQty'}" id="extraQty" style="text-align: right;" th:value="${dtls.extraQty}">
+                                        </td>
+                                        <td>
+                                            <input type="number" th:name="${'purchaseReturnDetails['+iter.index+'].tpAmount'}" id="tpAmount" style="text-align: right;" th:value="${dtls.tpAmount}">
+                                        </td>
+
+                                        <td>
+                                        <td><input style='text-align: right;' class='delete btn-danger' onclick='deleteThisRow()'
+                                                   type='button' value='Delete'/></td>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <input type="submit" value="Update" class="btn btn-primary" id="Update" name="Update">
+                            <!--<input type="button" value="Search" class="btn btn-primary" onclick="getDemandList()" name="Update"/>-->
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

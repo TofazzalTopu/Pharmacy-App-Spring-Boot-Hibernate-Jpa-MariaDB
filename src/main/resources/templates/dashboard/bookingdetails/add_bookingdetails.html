@@ -1,0 +1,383 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1 style="text-align:center">
+        Booking Details
+      </h1>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="row">
+        <!-- left column -->
+        <form id="app" role="form"  method="post" th:action="@{/adminpanel/bookingdetails/savebookingdetails}" th:object="${bookingdetails}">
+          <div class="col-md-8">
+
+            <div class="box box-primary">
+                <div class="box-body">
+                  <div class="form-group">
+                    <label for="guest">Number of guest</label>
+                    <input name="Name"  type="number" class="form-control" th:field="*{numberOfGuest}" id="guest"  placeholder="Enter guest number">
+                  </div>
+
+                  <input type="hidden" th:field="*{bDate}" v-model="selectedBookingDate">
+                  <input type="hidden" th:field="*{fDate}" v-model="selectedFunctionDate">
+                  <input type="hidden" th:field="*{fStartTime}" v-model="selectedStartTime">
+                  <input type="hidden" th:field="*{fEndTime}" v-model="selectedEndTime">
+
+
+                  <input type="hidden" th:field="*{clientId}" v-model="selectedClientId">
+                  <input type="hidden" th:field="*{functionId}" v-model="selectedFunctionId">
+                  <input type="hidden" th:field="*{conventionId}" v-model="selectedConventionId">
+
+                  <input type="hidden" th:field="*{listOfFoodId}" v-model="selectedFoodId">
+                  <input type="hidden" th:field="*{listOfFacilityId}" v-model="selectedFacilityId">
+
+                  <input type="hidden" th:field="*{totalAmount}" v-model="totalAmountCalculate">
+                  <input type="hidden" th:field="*{advancedAmount}" v-model="advancedAmountData">
+                  <input type="hidden" th:field="*{discountAmount}" v-model="discountAmountCalculate">
+
+                  <input type="hidden" th:field="*{date}" v-model="transactionTime">
+
+                  <div class="row">
+
+                      <div class="col-md-6">
+                          <div class="row">
+                              <div class="col-md-6">
+                                  <label>Booking Date</label>
+                              </div>
+                              <div class="col-md-6">
+                                  <vue-datepicker-local v-model="bookingDate" format="YYYY-MM-DD"></vue-datepicker-local>
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="col-md-6">
+                          <div class="row">
+                              <div class="col-md-6">
+                                  <label>Function Date</label>
+                              </div>
+                              <div class="col-md-6">
+                                  <vue-datepicker-local v-model="functionDate" format="YYYY-MM-DD"></vue-datepicker-local>
+                              </div>
+                          </div>
+                      </div>
+
+                  </div>
+
+                  <div class="row" style="margin-top: 10px;">
+
+                      <div class="col-md-6">
+                          <div class="row">
+                              <div class="col-md-6">
+                                  <label>Function Start Time</label>
+                              </div>
+                              <div class="col-md-6">
+                                  <vue-datepicker-local v-model="functionStartTime" format="YYYY-MM-DD HH:mm:ss"></vue-datepicker-local>
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="col-md-6">
+                          <div class="row">
+                              <div class="col-md-6">
+                                  <label>Function End Time</label>
+                              </div>
+                              <div class="col-md-6">
+                                  <vue-datepicker-local v-model="functionEndTime" format="YYYY-MM-DD HH:mm:ss"></vue-datepicker-local>
+                              </div>
+                          </div>
+                      </div>
+
+                  </div>
+
+                </div>
+            </div>
+
+            <div class="box box-primary">
+
+                <div class="box-body">
+                  <h4 class="text-center">Invoice</h4>
+                  <p v-if="selectedClient" ><strong>Customer Name: </strong>{{ selectedClient.name }}</p>
+                    <div class="row" style="padding: 10px;">
+                      <div class="col-md-6">
+                        <p v-if="selectedFunction"><strong>Function: </strong>{{ selectedFunction.name}}</p>
+                        <p v-if="selectedConventionHall"><strong>Convention Hall: </strong>{{ selectedConventionHall.name}}</p>
+                        <p v-if="selectedFacilities"><strong>Facilities:</strong></p>
+                        <p v-if="selectedFoodItemss"><strong>Food menu:</strong></p>
+                        <p><strong>Discount: </strong></p>
+                        <p><strong>Amount Pay: </strong></p>
+                        <hr>
+                        <p><strong>Total:</strong></p>
+                      </div>
+                      <div class="col-md-6">
+                        <p class="amount" v-if="selectedFunction"><strong>{{ selectedFunction.price}}</strong></p>
+                        <p class="amount" v-if="selectedConventionHall"><strong>{{ selectedConventionHall.price}}</strong></p>
+                        <p class="amount" v-if="selectedFacilities"><strong>{{ facilitiesPrice }}</strong></p>
+                        <p class="amount" v-if="selectedFoodItemss"><strong>{{foodMenuPrice}}</strong></p>
+
+                        <input type="number" v-model="discountAmount"><br>
+                        <input style="margin-top: 13px;" type="number" v-model="advancedAmount">
+                        <hr>
+                          <p><strong>{{ totalAmountCalculate }}</strong></p>
+                      </div>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+
+              <div class="box box-primary">
+                <div class="box-body">
+                  <div>
+                    <label class="typo__label">Client Name</label>
+                    <multiselect  v-model="selectedClient" :options="clientOptions" :searchable="true" :close-on-select="true" :show-labels="true" track-by="id" label="name" placeholder="Choose a client"></multiselect>
+                    <hr>
+                    <div v-if="selectedClient">
+                      <pre>
+Mobile: {{ selectedClient.mobile }}
+Address: {{ selectedClient.address }}
+                      </pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="box box-primary">
+                <div class="box-body">
+                  <div>
+                    <label class="typo__label">Function Name</label>
+                    <multiselect v-model="selectedFunction" :options="functionOptions" :searchable="true" :close-on-select="true" :show-labels="true" track-by="id" label="name" placeholder="Choose a function"></multiselect>
+                    <hr>
+                    <div v-if="selectedFunction">
+                      <pre>
+Price: {{ selectedFunction.price }}
+                      </pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="box box-primary">
+                <div class="box-body">
+                  <div>
+                    <label class="typo__label">Convention Hall</label>
+                    <multiselect v-model="selectedConventionHall" :options="conventionHallOptions" :searchable="true" :close-on-select="true" :show-labels="true" track-by="id" label="name" placeholder="Choose a convention hall"></multiselect>
+                    <hr>
+                    <div v-if="selectedConventionHall">
+                      <pre>
+Capacity: {{ selectedConventionHall.capacity }}
+Price: {{ selectedConventionHall.price }}
+                      </pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="box box-primary">
+                <div class="box-body">
+                  <div>
+                    <label class="typo__label">Facilities</label>
+                    <multiselect  v-model="selectedFacilities" placeholder="Search a facility" label="name" track-by="id"  :options="facilitiesOptions" :multiple="true" :taggable="true"></multiselect>
+                    <hr>
+                    <div v-for="facility in selectedFacilities">
+                      <pre>
+Name: {{ facility.name }}
+Price: {{ facility.price }}
+                      </pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="box box-primary">
+                <div class="box-body">
+                  <div>
+                    <label class="typo__label">FoodItems</label>
+                    <multiselect  v-model="selectedFoodItemss" placeholder="Search an item" label="name" track-by="id"  :options="FoodItemssOptions" :multiple="true" :taggable="true"></multiselect>
+                    <hr>
+                    <div v-for="item in selectedFoodItemss">
+                      <pre>
+Name: {{ item.name }}
+Price: {{ item.price }}
+                      </pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+        </form>
+        <script th:inline="javascript">
+          /*<![CDATA[*/
+            var clients = /*[[${clientlist}]]*/ [];
+            var conventionhalls = /*[[${conventionlist}]]*/  [];
+            var facilities = /*[[${facilities}]]*/  [];
+            var FoodItemss = /*[[${FoodItemss}]]*/  [];
+            var functions = /*[[${functions}]]*/  [];
+          /*]]>*/
+        </script>
+        <script>
+          new Vue({
+            el: "#app",
+            components: {
+              Multiselect: window.VueMultiselect.default
+            },
+            data:{
+              advancedAmount:0,
+              discountAmount:0,
+
+              bookingDate: new Date(),
+              functionDate: new Date(),
+              functionStartTime: new Date(),
+              functionEndTime: new Date(),
+
+              selectedClient: null,
+              selectedConventionHall:null,
+              selectedFunction: null,
+              selectedFacilities:[],
+              selectedFoodItemss:[],
+
+              clientOptions: [],
+              conventionHallOptions: [],
+              functionOptions: [],
+              facilitiesOptions: [],
+              FoodItemssOptions:[]
+            },
+            mounted: function(){
+
+            },
+            methods:{
+                show: function () {
+                    console.log("Time changed");
+                }
+            },
+            created: function () {
+              this.clientOptions = JSON.parse(clients);
+              this.functionOptions = JSON.parse(functions);
+              this.conventionHallOptions = JSON.parse(conventionhalls);
+              this.FoodItemssOptions = JSON.parse(FoodItemss);
+              this.facilitiesOptions = JSON.parse(facilities);
+            },
+            computed: {
+              transactionTime(){
+                  var date = new Date();
+                  return date.getFullYear() + '-' +
+                       (date.getMonth() +1) + '-' +
+                       date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes();
+              },
+              selectedClientId: function(){
+                if(this.selectedClient){
+                    return this.selectedClient.id;
+                }
+                return 0;
+              },
+              selectedFunctionId: function(){
+                  if(this.selectedFunction){
+                    return this.selectedFunction.id;
+                  }
+                  return 0;
+              },
+              selectedConventionId: function(){
+                if(this.selectedConventionHall) {
+                    return this.selectedConventionHall.id;
+                }
+                return 0;
+              },
+              selectedFacilityId: function(){
+                return this.selectedFacilities.map(item => {return item.id});
+              },
+              selectedFoodId: function(){
+                return this.selectedFoodItemss.map(item => {return item.id});
+              },
+              selectedStartTime: function(){
+                return this.functionStartTime.getFullYear() + '-' +
+                        (this.functionStartTime.getMonth() +1) + '-' +
+                        this.functionStartTime.getDate() + ' ' + this.functionStartTime.getHours() + ':' + this.functionStartTime.getMinutes();
+              },
+              selectedEndTime: function(){
+                return this.functionEndTime.getFullYear() + '-' +
+                        (this.functionEndTime.getMonth() +1) + '-' +
+                        this.functionEndTime.getDate() + ' ' + this.functionEndTime.getHours() + ':' + this.functionEndTime.getMinutes();
+              },
+              selectedFunctionDate: function(){
+                return this.functionDate.getFullYear() + '-' +
+                        (this.functionDate.getMonth() +1) + '-' +
+                        this.functionDate.getDate();
+              },
+              selectedBookingDate: function(){
+                return this.bookingDate.getFullYear() + '-' +
+                        (this.bookingDate.getMonth() +1) + '-' +
+                        this.bookingDate.getDate();
+              },
+              facilitiesPrice: function () {
+                var price = 0;
+                for(var i=0; i<this.selectedFacilities.length; i++){
+                  price = price + parseFloat(this.selectedFacilities[i].price);
+                }
+                return price;
+              },
+              foodMenuPrice: function () {
+                var price = 0;
+                for(var i=0; i<this.selectedFoodItemss.length; i++){
+                  price = price + parseFloat(this.selectedFoodItemss[i].price);
+                }
+                return price;
+              },
+              totalAmountCalculate: function () {
+                var totalAmount = 0;
+                totalAmount = this.facilitiesPrice + this.foodMenuPrice;
+
+                if(this.selectedFunction){
+                  totalAmount = totalAmount + parseFloat(this.selectedFunction.price);
+                }
+                if(this.selectedConventionHall){
+                  totalAmount = totalAmount + parseFloat(this.selectedConventionHall.price);
+                }
+                if(this.advancedAmount != ""){
+                   totalAmount = totalAmount - parseFloat(this.advancedAmount);
+                }
+                if(this.discountAmount != ""){
+                    totalAmount = totalAmount - parseFloat(this.discountAmount)
+                }
+
+                return totalAmount;
+              },
+
+              advancedAmountData : function () {
+                  if(this.advancedAmount != ""){
+                    return parseFloat(this.advancedAmount);
+                  }
+                  return 0;
+              },
+              discountAmountCalculate: function(){
+                  if (this.discountAmount != ""){
+                      return parseFloat(this.discountAmount)
+                  }
+                  return 0;
+              }
+
+            }
+          })
+        </script>
+      </div>
+      <!-- /.row -->
+    </section>
+    <!-- /.content -->
+  </div>
+</div>
+</body>
+</html>

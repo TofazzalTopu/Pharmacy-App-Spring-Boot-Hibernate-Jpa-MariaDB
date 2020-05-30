@@ -1,0 +1,275 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" th:href="@{/assets/css/jquery-ui.css}">
+    <link rel="stylesheet"
+          href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script th:src="@{/assets/js/jquery/jquery-ui.js}"></script>
+    <style type="text/css">
+        /* http://docs.jquery.com/UI/Autocomplete#theming*/
+        .ui-autocomplete {
+            position: absolute;
+            cursor: default;
+            background: #CCC
+        }
+
+        /* workarounds */
+        html .ui-autocomplete {
+            width: 1px;
+        }
+
+        /* without this, the menu expands to 100% in IE6 */
+        .ui-menu {
+            list-style: none;
+            padding: 2px;
+            margin: 0;
+            display: block;
+            float: left;
+        }
+
+        .ui-menu .ui-menu {
+            margin-top: -3px;
+        }
+
+        .ui-menu .ui-menu-item {
+            margin: 0;
+            padding: 0;
+            zoom: 1;
+            float: left;
+            clear: left;
+            width: 100%;
+        }
+
+        .ui-menu .ui-menu-item a {
+            text-decoration: none;
+            display: block;
+            padding: .2em .4em;
+            line-height: 1.5;
+            zoom: 1;
+        }
+
+        .ui-menu .ui-menu-item a.ui-state-hover, .ui-menu .ui-menu-item a.ui-state-active {
+            font-weight: normal;
+            margin: -1px;
+        }
+
+        input[type="number"] {
+            text-align: right;
+        }
+    </style>
+    <script>
+        var count = 0;
+
+        $(function () {
+            $('.btnt').on('click', deleteThisRow);
+
+            function deleteThisRow() {
+                console.log("deleteThisRow");
+                $(this).closest("tr").remove();
+                // var d = row.parentNode.parentNode.rowIndex;
+                // document.getElementById('demandTable').deleteRow(d);
+                // alert("btn "+ btn)
+                // var row = btn.parentNode.parentNode;
+                // row.parentNode.removeChild(row);
+            }
+
+            $("body").addClass("sidebar-collapse");
+
+            function log(message) {
+                $("<div>").text(message).prependTo("#log");
+                $("#log").scrollTop(0);
+            }
+
+            var host = getDomain();
+            var url = host + 'orders/search';
+
+            $("#searchDrug")
+                .autocomplete(
+                    {
+                        source: function (request, response) {
+                            $.ajax({
+                                url: url,
+                                dataType: "json",
+                                data: {
+                                    name: request.term
+                                },
+                                success: function (data) {
+                                    response(data);
+                                }
+                            });
+                        },
+                        minLength: 2,
+                        classes: {
+                            "ui-autocomplete": "highlight"
+                        },
+                        select: function (event, ui) {
+
+                            var row = $('#selectedDrugBody >tr').length;
+                            var sl = row + 1;
+                            count = row + 1;
+                            // alert(JSON.stringify(ui.item))
+                            var tr = "<tr><td>[" + sl + "] "
+                                + ui.item.name
+                                + " <small><sup>"
+                                + ui.item.dosageForm.name
+                                + ui.item.strength
+                                + "</sup></small> in <em><small>"
+                                + ui.item.generic.name
+                                + "</small></em></td> <td>"
+                                + ui.item.company.name + "</td> "
+                                + "<td><select class='form-control' name='priority' id='priority" + sl + "'>"
+                                + "<option value='1'>Urgent</option>"
+                                + "<option value='2'>Regular</option>"
+                                + "</select></td>"
+                                // + "<td><input class='col-xs-12'  type='number' value='11' id='priority"+sl+"'/>"
+                                + "<td><input  class='form-control' type='text' name='remarks' id='remarks" + sl + "'/></td>"
+                                + "<td><input type='hidden' value='" + ui.item.id + "' name='drugId[" + row + "]' id='drugId" + sl + "' /></td>"
+                                // + "<td><input class='drugIds' name='demandDetails[" + row + "].drug.id' type='hidden' value='" + ui.item.id + "' /></td>";
+
+                                + "<td><input style='text-align: right;' class='btnt' onclick='deleteThisRow()' type='button' value='Delete'/></td>"
+                                // +"<td><input style='text-align: right;' class='btn btn-danger btn-xs' type='button' value='Delete' onclick='deleteThisRow()'/></td>"
+                                + "</tr>";
+                            // Drug Name, Company Name, Box Qty, Pack Size, Bonus Qty,Extra Qty, Total Qty, VAT, Discount, TP Amount
+                            $("#selectedDrugBody").append(tr);
+                        }
+
+                    }).autocomplete("instance")._renderItem = function (ul,
+                                                                        item) {
+                var p1 = "<p>" + item.name + " <small><sup>" + item.dosageForm.name
+                    + item.strength + "</sup></small> in <em><small>"
+                    + item.generic.name + "</small></em>";
+                var p2 = "<br/>" + item.company.name + "</p>";
+                return $("<li>").append("<div>" + p1 + p2 + "</div>").appendTo(ul);
+            };
+            // End of
+        });
+
+        function setVal() {
+            var tbl = $('#selectedDrugBody');
+            getTableData(tbl);
+        }
+
+        function getTableData(table) {
+            var data = $("form").serializeArray();
+            var dta = [];
+            var i = 0;
+            // loop over each table row (tr)
+            $("#selectedDrugBody tr").each(function () {
+                var currentRow = $(this);
+
+                var col1_value = currentRow.find("td:eq(0)").text();
+                var col2_value = currentRow.find("td:eq(1)").text();
+                var col3_value = currentRow.find("td:eq(2)").text();
+                var col4_value = currentRow.find("td:eq(3)").text();
+
+                var obj = {};
+                obj.col1 = col1_value;
+                obj.col2 = col2_value;
+                obj.col3 = col3_value;
+                obj.col4 = col4_value;
+
+                // alert(JSON.stringify(arrData));
+                // console.log(JSON.stringify(data));
+                dta.push({'name': 'drugId' + i + '_no', 'value': obj.col1});
+                dta.push({'name': 'priority' + i + '_no', 'value': obj.col2});
+                dta.push({'name': 'remarks' + i + '_no', 'value': obj.col3});
+                dta.push({'name': 'createDate' + i + '_no', 'value': obj.col4});
+                dta.push({'name': 'count', 'value': count});
+                i++;
+            });
+
+            data.push({'name': 'count', 'value': count.toString()});
+
+            console.log(JSON.stringify(data));
+
+            $.ajax({
+                url: "/pms/demand/crt",
+                type: "POST",
+                data: data,
+                dataType: 'json',
+                // contentType: "application/json; charset=urf-8",
+                // contentType: 'application/x-www-form-urlencoded',
+                /* beforeSend: function (xhr) {
+                     xhr.setRequestHeader('contentType', "application/json; charset=urf-8");
+                 }*/
+
+                success: function (data, textStatus, jQxhr) {
+                    console.log("data== " + data);
+                    // $('#response pre').html( data );
+                },
+                error: function (jqXhr, textStatus, errorThrown) {
+                    console.log("errorThrown " + errorThrown);
+                }
+            });
+        }
+    </script>
+</head>
+
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <section class="content-header">
+            <p>
+                <a th:href="@{/adminpanel/dashboard/}">Home</a> / <a
+                    th:href="@{/demand/demandList}">Demand</a> / Demand Panel
+            </p>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control" id="searchDrug"
+                               placeholder="Search Drug ...."> <span
+                            class="input-group-btn">
+								<button type="button" name="search" id="search-btn"
+                                        class="btn btn-flat">
+									<i class="fa fa-search"></i>
+								</button>
+							</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box box-primary">
+                        <!-- /.box-header -->
+                        <!--th:object="${demandDetails}"-->
+
+                        <form id="app" name="demandForm" role="form"
+                              th:action="@{/demand/crt}"
+                              method="post">
+                            <div class="container-fluid">
+                                <table id="demandTable" class="table">
+                                    <thead>
+                                    <tr>
+                                        <th style="width: 15%;">Drug Name</th>
+                                        <th style="width: 16%;">Company Name</th>
+                                        <th style="width: 8%;">Priority</th>
+                                        <th style="width: 8%;">Remarks</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="selectedDrugBody">
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                            <br/><br/><br/><br/><br/>
+                            <div class="box-footer  text-center">
+                                <!--<button type="submit" class="btn btn-primary">Save</button>-->
+                                <button type="submit" onclick="setVal();" class="btn btn-primary">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

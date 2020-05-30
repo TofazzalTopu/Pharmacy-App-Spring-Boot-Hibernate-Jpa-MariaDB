@@ -1,0 +1,93 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:th="http://www.thymeleaf.org"
+	layout:decorate="~{fragments/layout}">
+<head>
+<meta charset="UTF-8">
+<title>Title</title>
+</head>
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<p>
+					<a th:href="@{/adminpanel/dashboard/}">Home</a> / <a
+						th:href="@{/purchase/purchaseList}">Purchase</a>
+				</p> 
+				<h1 style="text-align: center">Purchase Details</h1>
+
+			</section>
+
+			<!-- Main content -->
+			<section class="content">
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="box">
+							<!-- /.box-header -->
+							<div class="box-body">
+								<table class="table table-bordered table-striped">
+									<thead>
+										<tr>
+											<th>ID</th>
+											<th>Supplier Name</th>
+											<th>Supplier Inv. ID</th>
+											<th>Paid Amount</th>
+											<th>Purchase Date</th>
+											<th>Create Time</th>
+
+										</tr>
+									</thead>									
+											    
+									<tbody>
+										<tr>
+											<td th:text="${purchaseMaster.id}"></td>
+											<td th:text="${purchaseMaster.suplierName}"></td>
+											<td th:text="${purchaseMaster.spInvId}"></td>
+											<td th:text="${purchaseMaster.netPayable}"></td>
+											<td th:text="${purchaseMaster?.invDate}"></td>
+											<td th:text="${purchaseMaster?.createTime}">Pending</td>
+										</tr>
+										
+
+										<tr class="info">
+											<th colspan="6">Drug List</th>
+										</tr>
+
+										<tr>
+											<th>SL</th>
+											<th>Drug Name</th>
+											
+											<th style="text-align: right;">Qty</th>
+											<th style="text-align: right;">Unit Sale Price</th>
+											<th style="text-align: right;">Total Purchase Price</th>											
+											<th style="text-align: right;">VAT</th>
+											
+										</tr>
+
+
+										<tr th:each="pd,iter : ${purchaseMaster.purchaseDetails}">
+											<td th:text="${iter.count}"></td>
+											<td><span th:text="${pd.drug.name}"></span> <small><sup><span
+														th:text="${pd.drug.dosageForm.name}"> <span
+															th:text="${pd.drug.strength}"></span></span></sup></small> in <em><small>
+														<span th:text="${pd.drug.generic.name}"></span>
+												</small></em><br /> <span th:text="${pd.drug.company.name}"></span></td>
+											
+												
+											<td th:text="${#numbers.formatDecimal(pd?.totalQty, 0, 'COMMA', 0, 'POINT')}" style="text-align: right;"></td>									
+											<td th:text="${#numbers.formatDecimal(pd?.drug.price, 0, 'COMMA', 2, 'POINT')}" style="text-align: right;"></td>									
+											<td th:text="${#numbers.formatDecimal(pd?.tpAmount, 0, 'COMMA', 2, 'POINT')}" style="text-align: right;"></td>											
+											<td th:text="${#numbers.formatDecimal(pd?.vat, 0, 'COMMA', 2, 'POINT')}" style="text-align: right;"></td>
+											
+											</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+</body>
+</html>

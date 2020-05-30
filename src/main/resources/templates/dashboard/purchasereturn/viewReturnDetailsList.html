@@ -1,0 +1,67 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="content-wrapper">
+        <section class="content-header">
+            <p>
+                <a th:href="@{/adminpanel/dashboard/}">Home</a> / <a
+                    th:href="@{/purchaseReturn/viewReturnForm}">Purchase Return Details List</a>
+            </p>
+            <h1 style="text-align: center">Purchase Return Details List</h1>
+
+        </section>
+
+        <section class="content">
+            <div class="row">
+                <form id="purchaseReturnListForm" name="purchaseReturnListForm" role="form">
+                    <div>
+                        <div class="box">
+                            <div class="box-body">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                    <tr class="info">
+                                        <th colspan="11">Purchase List</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Sl</th>
+                                        <th>Drug Name</th>
+                                        <th>Generic</th>
+                                        <th>Box Qty</th>
+                                        <th>Pack Size</th>
+                                        <th>Bonus Qty</th>
+                                        <th>Extra Qty</th>
+                                        <th>Total Amount</th>
+
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+                                    <tr th:each="dtls,iter : ${purchaseReturnDetailsList}">
+                                        <td th:text="${iter.count}"></td>
+                                        <td th:text="${dtls.drug.getName()}"></td>
+                                        <td th:text="${dtls.drug.getGeneric().getName()}"></td>
+                                        <td th:text="${dtls.boxQty}"></td>
+                                        <td th:text="${dtls.packSize}"></td>
+                                        <td th:text="${dtls.bonusQty}"></td>
+                                        <td th:text="${dtls.extraQty}"></td>
+                                        <td th:text="${dtls.tpAmount}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

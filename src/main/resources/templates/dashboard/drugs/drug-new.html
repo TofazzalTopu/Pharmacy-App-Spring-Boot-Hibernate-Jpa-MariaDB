@@ -1,0 +1,152 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:th="http://www.thymeleaf.org"
+	layout:decorate="~{fragments/layout}">
+<head>
+<meta charset="UTF-8">
+<title>Title</title>
+</head>
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<p>
+					<a href="/adminpanel/dashboard">Home</a> / <a
+						href="/adminpanel/dashboard">Drugs</a>
+				</p>
+				<h1 style="text-align: center">Add New Drug</h1>
+			</section>
+
+			<!-- Main content -->
+			<section class="content">
+				<div class="row">
+					<!-- left column -->
+					<div class="col-md-8 col-md-offset-2">
+						<!-- general form elements -->
+						<div class="box box-primary">
+							<!-- /.box-header -->
+							<!-- form start -->
+							<form role="form" id="app" th:action="@{/drugs/create}"
+								th:object="${drug}" method="post">
+								<div class="box-body">
+									<div class="form-group">
+										<label for="name">Name</label> <input th:field="*{name}"
+											name="Name" type="text" class="form-control" id="name"
+											placeholder="Enter name" required>
+									</div>
+									<div class="form-group">
+										<label for="name">Generic</label> <select class="form-control"
+											th:field="*{generic.id}" id="genericId" required>
+											<option value="">Select Generic</option>
+											<option th:each="generic : ${generics}"
+												th:value="${generic.id}" th:text="${generic.name}"></option>
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="name">Dosage Form</label> <select
+											class="form-control" th:field="*{dosageForm.id}"
+											id="dosageFormId" required>
+											<option value="">Select Dosage Form</option>
+											<option th:each="dosageForm : ${dosageForms}"
+												th:value="${dosageForm.id}" th:text="${dosageForm.name}"></option>
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="name">Company</label> <select class="form-control"
+											th:field="*{company.id}" id="companyId" required>
+											<option value="">Select Company</option>
+											<option th:each="company : ${companies}"
+												th:value="${company.id}" th:text="${company.name}"></option>
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="name">Strength</label> <input
+											th:field="*{strength}" name="strength" type="text"
+											class="form-control" id="strength"
+											placeholder="Enter strength" required>
+									</div>
+
+									<div class="form-group">
+										<label for="name">Price</label> <input th:field="*{price}"
+											name="price" class="form-control" id="price"
+											placeholder="Enter price" type="number" min="0.01"
+											step="0.01" required>
+									</div>
+
+									<div class="form-group">
+										<label for="name">Shelf</label> <select class="form-control"
+											v-model="shelfId" id="shelfId" @change="loadRack($event)">
+											<option value="">Select Shelf</option>
+											<option th:each="shelf : ${shelfs}" th:value="${shelf.id}"
+												th:text="${shelf.name}"></option>
+										</select>
+									</div>
+
+									<div class="form-group">
+										<label for="name">Rack</label> <select class="form-control"
+											th:field="*{rack.id}" id="rackId" required>
+											
+											
+										</select>
+									</div>
+
+								</div>
+								<div class="box-footer text-center">
+									<button type="submit" class="btn btn-primary">Save</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				<!-- /.row -->
+				
+
+				<script>
+				
+				
+                    new Vue({
+                        el: "#app",
+                        data:{
+                        	shelfId:'',
+                        	rackId:'',
+                        	racks:[]
+                        },
+                        
+                        methods:{
+                        	loadRack: function(){                        	
+                                    
+                                if(this.shelfId ==""){                                    
+                                    return;
+                                }
+                                var host =getDomain();
+                                host=host+'drugs/getRack/'+this.shelfId;
+                               
+                            	this.$http.post(host, {
+                                    id:this.shelfId
+                                }, {credentials : true, headers:{
+                                        'X-CSRF-TOKEN' : window.csrfToken,
+                                    }}).then(res => {
+                                    this.racks = res.body;
+                                    var optStr="<option value=''>Select Rack</option>";
+                                    $.each( res.body, function(index, rack ) {
+                                    	 console.log( rack.id + ": " + rack.name + ": " + rack.details);
+                                    	 var temp="<option value='"+rack.id+"'>"+rack.name+"</option>";
+                                    	 optStr=optStr+temp;
+                                    	});
+                                    var sel = document.getElementById('rackId');
+                                    sel.innerHTML = optStr;
+                                }).catch(err => {
+                                    console.log(err);
+                                })
+                            }
+                        }
+                       
+                    })
+                </script>
+
+			</section>
+			<!-- /.content -->
+		</div>
+	</div>
+</body>
+</html>

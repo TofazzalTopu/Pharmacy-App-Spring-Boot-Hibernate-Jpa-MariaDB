@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">Pharmacy Management System || Admin Panel</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	<link rel="icon" th:href="@{/assets/img/favicon.png}" type="image/gif">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="//fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//unpkg.com/onsenui@2.0.4/css/ionicons/css/ionicons.min.css">
+<!--     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/css/dataTables.bootstrap.min.css"> -->
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="//cdn.quilljs.com/1.3.6/quill.snow.css">
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css">
+    <script src="https://unpkg.com/lodash@4.16.0"></script>
+
+    <link rel="stylesheet" th:href="@{/assets/css/AdminLTE.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/vue_datepicker_local.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/_all-skins.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/app.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/sstyle.css}">
+    <link rel="stylesheet" th:href="@{/assets/asl_rms/dist/build.css}">
+    <link rel="stylesheet" th:href="@{/assets/asl_rms/dist/modal.css}">
+
+    <script src="https://unpkg.com/vue-multiselect@2.1.0"></script>
+    <script src="//cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+    <script src="//unpkg.com/vue-toasted"></script>
+    <script src="//unpkg.com/@saeris/vue-spinners"></script>
+    <script src="//cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+    <script src="//unpkg.com/vee-validate@latest"></script>
+    <script src="//unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="//cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="//unpkg.com/vue-jstree"></script>
+    <script th:src="@{/assets/js/vue-html-to-paper.js}"></script>
+    <script th:src="@{/assets/asl_rms/dist/lib.umd.min.js}"></script>
+    <script th:src="@{/assets/asl_rms/dist/build.umd.min.js}"></script>
+    <script th:src="@{/assets/asl_rms/dist/modal.umd.min.js}"></script>
+    <script th:src="@{/assets/js/vue_datepicker_local.js}"></script>
+    <script th:src="@{/assets/asl_rms/dist/RequisitionRow.umd.min.js}"></script>
+    
+    
+	<script th:inline="javascript">
+		function getDomain() {
+		 	var ctx = /*[[@{/}]]*/ 'test';			        
+	        var href=window.location.href;
+	        var arr = href.split(ctx);
+	       	var path=arr[0]+ctx;			       	
+	       	return path;
+		}		   
+	</script>
+
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+
+    <style>
+        h1{
+            margin:80px 0
+        }
+
+        label {
+            font-size: 13px;
+        }
+
+        .btn-close {
+            color: #aaaaaa;
+            font-size: 20px;
+            text-decoration: none;
+            padding:10px;
+            position: absolute;
+            right: 7px;
+            top: 0;
+        }
+        .btn-close:hover {
+            color: #919191;
+        }
+        .modale:before {
+            content: "";
+            display: none;
+            background: rgba(0, 0, 0, 0.6);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 10;
+        }
+        .opened:before {
+            display: block;
+        }
+        .opened .modal-dialog {
+            -webkit-transform: translate(0, 0);
+            -ms-transform: translate(0, 0);
+            transform: translate(0, 0);
+            top: 20%;
+        }
+        .modal-dialog {
+            background: #fefefe;
+            border: #333333 solid 0px;
+            border-radius: 5px;
+            margin-left: -200px;
+            text-align:center;
+            position: fixed;
+            left: 50%;
+            top: -100%;
+            z-index: 11;
+            width: 360px;
+            box-shadow:0 5px 10px rgba(0,0,0,0.3);
+            -webkit-transform: translate(0, -500%);
+            -ms-transform: translate(0, -500%);
+            transform: translate(0, -500%);
+            -webkit-transition: -webkit-transform 0.3s ease-out;
+            -moz-transition: -moz-transform 0.3s ease-out;
+            -o-transition: -o-transform 0.3s ease-out;
+            transition: transform 0.3s ease-out;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .modal-body input{
+            width:200px;
+            padding:8px;
+            border:1px solid #ddd;
+            color:#888;
+            outline:0;
+            font-size:14px;
+            font-weight:bold
+        }
+        .modal-header,
+        .modal-footer {
+            padding: 10px 20px;
+            text-align: center;
+        }
+        .modal-header {
+            border-bottom: #eeeeee solid 1px;
+        }
+        .modal-header h2 {
+            font-size: 20px;
+        }
+
+        .ql-toolbar.ql-snow+.ql-container.ql-snow {
+            height: 300px !important;
+        }
+        .small-box .icon {
+            top:10px;
+        }
+        .event-item > .wrapper{
+            background-color: transparent !important;
+        }
+        .__vev_calendar-wrapper .events-wrapper .event-item .desc{
+            color: black;
+        }
+        .__vev_calendar-wrapper .cal-wrapper .cal-header{
+            background-color: rgb(242, 149, 67);
+        }
+
+        .__vev_calendar-wrapper .events-wrapper{
+            background-color: transparent !important;
+            margin-top: 58px;
+        }
+
+        @media screen and (min-width: 768px){
+            .__vev_calendar-wrapper .events-wrapper{
+                background-color: transparent !important;
+            }
+        }
+
+        .__vev_calendar-wrapper .events-wrapper .event-item .time{
+            color: black;
+        }
+
+        .__vev_calendar-wrapper .events-wrapper .date{
+            background-color: rgb(242, 149, 67);
+            border-radius: unset;
+            max-width: 100%;
+        }
+        .room_table td{
+            border: 1px solid black;
+            height: 100px;
+            width: 100px;
+        }
+
+
+        .bs-glyphicons {
+            padding-left: 0;
+            padding-bottom: 1px;
+            margin-bottom: 20px;
+            list-style: none;
+            overflow: hidden;
+        }
+
+        .bs-glyphicons li {
+            float: left;
+            width: 25%;
+            height: 115px;
+            padding: 10px;
+            margin: 0 -1px -1px 0;
+            font-size: 12px;
+            line-height: 1.4;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .bs-glyphicons .glyphicon {
+            margin-top: 5px;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .bs-glyphicons .glyphicon-class {
+            display: block;
+            text-align: center;
+            word-wrap: break-word; /* Help out IE10+ with class names */
+        }
+
+        .bs-glyphicons li:hover {
+            background-color: rgba(86, 61, 124, .1);
+        }
+
+        @media (min-width: 768px) {
+            .bs-glyphicons li {
+                width: calc(100% / 8 - 16px);
+                margin-bottom: 16px;
+            }
+        }
+
+        .rooms li:not(:nth-child(8)){
+            margin-right: 16px;
+        }
+
+        .toggle {
+            position: relative;
+            display: block;
+            width: 42px;
+            height: 24px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transform: translate3d(0, 0, 0);
+        }
+        .toggle:before {
+            content: "";
+            position: relative;
+            top: 1px;
+            left: 1px;
+            width: 40px;
+            height: 22px;
+            display: block;
+            background: #c8ccd4;
+            border-radius: 12px;
+            transition: background 0.2s ease;
+        }
+        .toggle span {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 24px;
+            height: 24px;
+            display: block;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(154,153,153,0.75);
+            transition: all 0.2s ease;
+        }
+        .toggle span svg {
+            margin: 7px;
+            fill: none;
+        }
+        .toggle span svg path {
+            stroke: #c8ccd4;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 24;
+            stroke-dashoffset: 0;
+            transition: all 0.5s linear;
+        }
+        #cbx:checked + .toggle:before {
+            background: #52d66b;
+        }
+        #cbx:checked + .toggle span {
+            transform: translateX(18px);
+        }
+        #cbx:checked + .toggle span path {
+            stroke: #52d66b;
+            stroke-dasharray: 25;
+            stroke-dashoffset: 25;
+        }
+
+        .label.paid{
+            background-color: #00a65a !important;
+        }
+
+        .label.item_served{
+            background-color: #d68783 !important;
+        }
+
+        .label.approved{
+            background-color: #1ba60f !important;
+        }
+
+        .label.received{
+            background-color: #a6399f !important;
+        }
+
+        .label.accept{
+            background-color: #35a4a6 !important;
+        }
+
+        .label.cancel, .label.reject_order{
+            background-color: #f00e1d !important;
+        }
+
+
+        .label.item_ready{
+            background-color: #6af017 !important;
+        }
+
+        .label.move_to_bill{
+            background-color: #f04cc9 !important;
+        }
+
+
+        .label.created{
+            background-color: #1718ff !important;
+        }
+
+        th{
+            font-size: 13px;
+        }
+
+        .design {
+            margin-left: 0px;
+            width: 1099px;
+            left: 18%
+        }
+
+        @media screen and (max-width: 600px) {
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+
+    <script>
+        Vue.component('requisition-row',window.RequisitionRow);
+    </script>
+
+    <script th:inline="javascript">
+
+        /*<![CDATA[*/
+        window.context = /*[[${context}]]*/ "";
+        window.csrfToken = /*[[${_csrf.token}]]*/ "";
+        window.csrfHeader = /*[[${_csrf.headerName}]]*/ "";
+        /*]]>*/
+    </script>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+
+<div class="wrapper">
+    <th:block th:replace="fragments/header :: header"/>
+    <th:block th:replace="fragments/sidebar :: sidebar"/>
+
+    <th:block layout:fragment="content"/>
+
+    <th:block th:replace="fragments/footer :: footer"/>
+    <th:block th:replace="fragments/control-sidebar :: control-sidebar"/>
+</div>
+
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/js/jquery.dataTables.min.js"></script> -->
+
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>
+	
+	
+<script src="//cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/js/dataTables.bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.min.js"></script>
+
+<script th:src="@{/assets/js/chart.js/Chart.js}"></script>
+<script th:src="@{/assets/js/adminlte.min.js}"></script>
+<!-- <script th:src="@{/assets/js/dashboard.js}"></script> -->
+<script th:src="@{/assets/js/demo.js}"></script>
+
+</body>
+</html>

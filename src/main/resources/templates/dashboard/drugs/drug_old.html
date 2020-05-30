@@ -1,0 +1,135 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:th="http://www.thymeleaf.org"
+	layout:decorate="~{fragments/layout}">
+<head>
+<meta charset="UTF-8">
+<title>Title</title>
+<link rel="stylesheet"
+	href="//cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.min.css" />
+<link rel="stylesheet"
+	th:href="@{/assets/css/material.indigo-pink.min.css}">
+<style type="text/css">
+p {
+	margin: 0 0 1px;
+}
+</style>
+</head>
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<h1 style="text-align: center">
+					Drug: <span th:text="${drug?.name}"></span> <span
+						th:text="${drug?.strength}"></span> <sup> <span
+						th:text="${drug?.dosageForm?.name}"></span></sup>
+				</h1>
+			</section>
+
+			<!-- Main content -->
+			<section class="content">
+				<div class="row">
+					<!-- left column -->
+					<div class="col-md-8 col-md-offset-2">
+						<!-- general form elements -->
+						<div class="box box-primary">
+							<p>
+								<strong>Generic: </strong><span th:text="${drug?.generic?.name}"></span>
+							</p>
+							<p>
+								<strong>Company: </strong><span th:text="${drug?.company?.name}"></span>
+							</p>
+							<p>
+								<strong>Price: </strong><span th:text="${drug?.price}"></span>
+							</p>
+						</div>
+						<div class="box box-primary">
+							<p>
+								<strong>Location: </strong><span
+									th:text="${drug?.rack?.name}"></span>
+							</p>
+						</div>
+						<h4 style="text-align: center">Similar Drugs</h4>
+					</div>
+
+					<div class="col-md-8 col-md-offset-2">
+
+
+						<table style="width: 100%;"
+							class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp is-upgraded"
+							data-upgraded=",MaterialDataTable">
+							<thead>
+								<tr>
+									<th style="text-align: left;">Name</th>
+									<th>Location</th>
+									<th>Price</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="drug, iStat : ${drugs}">
+
+									<td class="mdl-data-table__cell--non-numeric">
+
+										<p>
+											<a th:href="@{/drugs/{id}(id=${drug.getId()})}"><span
+												th:text="${drug?.name}"></span></a> <span
+												th:text="${drug?.strength}"></span><sup> <span
+												th:text="${drug?.dosageForm?.name}"></span></sup>
+										</p>
+										<p th:text="${drug?.generic?.name}"></p>
+										<p th:text="${drug?.company?.name}"></p>
+									</td>
+
+									<td th:if="${drug?.rack != null}"><span
+										th:text="${drug?.rack?.name}"></span> </td>
+
+									<!-- <td th:if="${drug?.location != null}"><span
+										th:text="${drug?.location?.shelf}"></span> - <span
+										th:text="${drug?.location?.rack}"></span></td> -->
+									<td th:if="${drug?.rack == null}">
+										<div class="layout--row">
+											<a id="ttl-id"
+												th:href="'/drugs/'+${drug.id}+'/locations?action=new'">
+												<i class="material-icons">add_location</i>
+											</a>
+											<div class="mdl-tooltip" data-mdl-for="ttl-id">Add
+												location</div>
+										</div>
+									</td>
+
+									<td th:text=" ${'TK ' + drug.price}"></td>
+									<td>
+										<div class="layout--row">
+											<a th:id="'ttv-' + ${drug.id}"
+												th:href="@{/drugs/{id}(id=${drug.getId()})}"> <i
+												class="material-icons">remove_red_eye</i>
+											</a>
+											<div class="mdl-tooltip"
+												th:data-mdl-for="'ttv-' + ${drug.id}">View</div>
+
+											<a th:id="'tte-' + ${drug.id}"
+												th:href="'/drugs/'+${drug.id}+'?action=edit'"> <i
+												class="material-icons">edit</i>
+											</a>
+											<div class="mdl-tooltip"
+												th:data-mdl-for="'tte-' + ${drug.id}">Edit</div>
+										</div>
+									</td>
+
+
+								</tr>
+							</tbody>
+						</table>
+
+					</div>
+				</div>
+				<!-- /.row -->
+			</section>
+
+
+			<!-- /.content -->
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,408 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:th="http://www.thymeleaf.org"
+	layout:decorate="~{fragments/layout}">
+<head>
+<meta charset="UTF-8">
+<title>Title</title>
+
+<link rel="stylesheet" th:href="@{/assets/css/jquery-ui.css}">
+<link rel="stylesheet"
+	href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script th:src="@{/assets/js/jquery/jquery-ui.js}"></script>
+<style type="text/css">
+/* http://docs.jquery.com/UI/Autocomplete#theming*/
+.ui-autocomplete {
+	position: absolute;
+	cursor: default;
+	background: #CCC
+}
+
+/* workarounds */
+html .ui-autocomplete {
+	width: 1px;
+} /* without this, the menu expands to 100% in IE6 */
+.ui-menu {
+	list-style: none;
+	padding: 2px;
+	margin: 0;
+	display: block;
+	float: left;
+}
+
+.ui-menu .ui-menu {
+	margin-top: -3px;
+}
+
+.ui-menu .ui-menu-item {
+	margin: 0;
+	padding: 0;
+	zoom: 1;
+	float: left;
+	clear: left;
+	width: 100%;
+}
+
+.ui-menu .ui-menu-item a {
+	text-decoration: none;
+	display: block;
+	padding: .2em .4em;
+	line-height: 1.5;
+	zoom: 1;
+}
+
+.ui-menu .ui-menu-item a.ui-state-hover, .ui-menu .ui-menu-item a.ui-state-active
+	{
+	font-weight: normal;
+	margin: -1px;
+}
+
+input[type="number"] {
+	text-align: right;
+}
+</style>
+<script>
+	function submitSalesMaster() {
+		var tpAmount = 0;
+		$('.totalDrugPrice').each(function() {
+			var tpAmount_ = parseFloat($(this).val());
+			tpAmount = tpAmount + tpAmount_;
+		});
+		
+		if(tpAmount>1){
+			document.getElementById("salesForm").submit();
+	
+		}else{
+			alert("Please complete the Sales Form correctly!");
+		}	
+	}
+	
+	function findTotalAmount() {
+		var tpAmount = 0;
+		$('.totalDrugPrice').each(function() {
+			var tpAmount_ = parseFloat($(this).val());
+			tpAmount = tpAmount + tpAmount_;
+		});
+		$("#totalAmount").val(tpAmount);	
+		$("#totalVAT").val(0);	
+		$("#totalDiscount").val(0);		
+		$("#netPayable").val(tpAmount);
+
+	}
+	
+	
+	function calculateDiscountP() {
+		var totalVAT = $("#totalVAT").val();
+		totalVAT = totalVAT == null ? 0 : totalVAT;
+		totalVAT =  parseFloat(totalVAT);
+		
+		var totalAmount = $("#totalAmount").val();
+		totalAmount = totalAmount == null ? 0 : totalAmount;
+		totalAmount =  parseFloat(totalAmount);
+		
+		var totalDiscount = totalAmount*totalVAT/100;
+		totalDiscount=totalDiscount.toFixed(2);
+		totalDiscount =  parseFloat(totalDiscount);
+		
+		$("#totalDiscount").val(totalDiscount);		
+		$("#netPayable").val(totalAmount-totalDiscount);
+
+	}
+	
+	function calculateDiscountTK() {
+		var totalDiscount = $("#totalDiscount").val();
+		totalDiscount = totalDiscount == null ? 0 : totalDiscount;
+		totalDiscount =  parseFloat(totalDiscount);
+		
+		var totalAmount = $("#totalAmount").val();
+		totalAmount = totalAmount == null ? 0 : totalAmount;
+		totalAmount =  parseFloat(totalAmount);
+		
+		var totalDiscountP = 100*totalDiscount/totalAmount;
+		totalDiscountP=totalDiscountP.toFixed(2);
+		totalDiscountP =  parseFloat(totalDiscountP);
+		
+		$("#totalVAT").val(totalDiscountP);		
+		$("#netPayable").val(totalAmount-totalDiscount);
+
+	}
+
+
+	function findDrugPrice(id) {
+		var salesQty = $("#salesQty" + id).val();
+		salesQty = salesQty == null ? 0 : salesQty;
+		salesQty =  parseInt(salesQty);
+
+		var unitPrice = $("#unitPrice" + id).text();
+		unitPrice = unitPrice == null ? 0 : unitPrice;
+		unitPrice =  parseFloat(unitPrice);
+		
+		var stock = $("#stock" + id).text();
+		stock = stock == null ? 0 : stock;
+		stock =  parseInt(stock);
+		
+		if(salesQty>stock){
+		//	alert("You can not sale above stock quantity "+stock);
+			$("#salesQtyError" + id).text("Sale Qty can not be greater than stock "+stock);
+			document.getElementById("salesQty" + id).focus();			
+			return false;
+			
+		}else{
+			$("#salesQtyError" + id).text("");
+		}
+		
+
+		
+
+		var totalDrugPrice = parseInt(salesQty) * unitPrice;
+
+		$("#totalDrugPrice" + id).val(totalDrugPrice);
+		
+		findTotalAmount();
+
+	}
+
+	function deleteRow(btn) {
+		var row = btn.parentNode.parentNode;
+		row.parentNode.removeChild(row);
+		findTotalAmount() ;
+	}
+
+	function deleteAllRow() {
+		location.reload();
+	}
+
+	$(function() {
+		$("body").addClass("sidebar-collapse");
+
+		function log(message) {
+			$("<div>").text(message).prependTo("#log");
+			$("#log").scrollTop(0);
+		}
+
+		var host = getDomain();
+		var url = host + 'sales/searchStock';
+		var sl = 0;
+
+		$("#searchDrug")
+				.autocomplete(
+						{
+							source : function(request, response) {
+								$.ajax({
+									url : url,
+									dataType : "json",
+									data : {
+										name : request.term
+									},
+									success : function(data) {
+										response(data);
+									}
+								});
+							},
+							minLength : 2,
+							classes : {
+								"ui-autocomplete" : "highlight"
+							},
+							select : function(event, ui) {
+
+								var row = $('#selectedDrugBody >tr').length;
+								if (row == 0) {
+									sl = row + 1;
+								} else {
+									sl = sl + 1;
+								}
+
+								var tr = "<tr><td>["
+										+ sl
+										+ "] "
+										+ ui.item.name
+										+ " <small><sup>"
+										+ ui.item.dosageForm
+										+ ui.item.strength
+										+ "</sup></small> in <em><small>"
+										+ ui.item.generic
+										+ "</small></em></td> <td>"
+										+ ui.item.company
+										+ "</td> "
+										+ "<td>"
+										+ ui.item.uom
+										+ " <input type='hidden' value='"+ui.item.id+"' name='salesDetails["+row+"].drugId' ></td>"
+										+ "<td id='stock" + sl + "'> "
+										+ ui.item.stock
+										+ "</td>"
+										+ "<td><input class='col-xs-12'  type='number' value='1' name='salesDetails["+row+"].salesQty'  id='salesQty"
+										+ sl
+										+ "' onblur='findDrugPrice("
+										+ sl
+										+ ")' /><span class='label label-warning' id='salesQtyError" + sl + "'></span> </td>"
+										+ "<td style='text-align: center;' id='unitPrice" + sl + "'> "
+										+ ui.item.price
+										+ "</td>"
+										+ "<td><input class='col-xs-12 totalDrugPrice'  type='number' value='0' name='salesDetails["+row+"].salesAmount'  id='totalDrugPrice"+sl+"' readonly style='background-color: #e9ecef;'/> </td>"
+										+ "<td><button style='text-align: right;' class='btn btn-danger btn-xs' type='button' value='Delete' onclick='deleteRow(this)'>Delete</button></td>"
+										+ "</tr>";
+								
+								$("#selectedDrugBody").append(tr);
+							}
+
+						}).autocomplete("instance")._renderItem = function(ul,
+				item) {
+			var p1 = "<p>" + item.name + " <small><sup>" + item.dosageForm
+					+ item.strength + "</sup></small> in <em><small>"
+					+ item.generic + "</small></em>";
+			var p2 = "<br/>" + item.company + "</p>";
+			return $("<li>").append("<div>" + p1 + p2 + "</div>").appendTo(ul);
+		};
+
+		// End of 
+
+	});
+</script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+  $( function() {
+    $("#salesDate").datepicker({ dateFormat: 'yy-mm-dd' });
+  } );
+  </script>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<p>
+					<a th:href="@{/adminpanel/dashboard/}">Home</a> / <a
+						th:href="@{/sales/salesList}">Sales</a> / Sales Panel
+				</p>
+			</section>
+
+			<!-- Main content -->
+			<section class="content">
+				<div class="row">
+					<!-- left column -->
+					<div class="col-md-12">
+						<!-- general form elements -->
+
+						<div class="box box-primary">
+							<!-- /.box-header -->
+							<form id="salesForm" role="form" th:action="@{/sales/createSale}"
+								th:object="${salesMaster}" method="post">
+
+								<!-- /.box-header -->
+
+								<div class="row">
+									<div class="col-sm-3">
+										<div class="form-group">
+											<label for="salesNo">Sales No: </label> <input required
+												type="text" class="form-control" name="salesNo" id="salesNo">
+										</div>
+									</div>
+
+									<div class="col-sm-3">
+										<div class="form-group">
+											<label for="salesDate">Sales Date: </label> <input required
+												type="text" class="form-control" name="salesDate"
+												id="salesDate">
+										</div>
+									</div>
+									<div class="col-md-6">
+										<!-- search drug -->
+										<div class="form-group">
+											<label for="searchDrug">Search for Drug: </label> <input
+												type="text" name="q" class="form-control" id="searchDrug"
+												placeholder="Search Drug ....">
+										</div>
+										<!-- End search drug -->
+									</div>
+								</div>
+
+
+
+
+
+								<div class="container-fluid">
+
+									<!-- <h3>Drug Details:</h3> -->
+									<table id="orderTable" class="table">
+										<thead>
+											<tr>
+
+												<th style="width: 15%;">Drug Name</th>
+												<th style="width: 15%;">Company Name</th>
+												<th style="width: 10%;">UOM</th>
+												<th style="width: 10%;">Stock</th>
+
+												<th style="width: 10%;">Sales Qty</th>
+												<th style="width: 10%;">Unit Price(৳ )</th>
+												<th style="width: 10%;">Total Price</th>
+												<th style="width: 10%;">Action</th>
+
+											</tr>
+										</thead>
+										<tbody id="selectedDrugBody">
+										</tbody>
+									</table>
+								</div>
+
+								<div class="row">
+									<div class="col-sm-3">
+										<div class="form-group">
+											<label for="totalAmount">Total Amount: </label> <input
+												readonly="readonly" type='number' value='0' id="totalAmount"
+												class="form-control" name="totalAmount">
+										</div>
+									</div>
+									<div class="col-sm-3">
+										<div class="form-group">
+											<label for="totalVAT">Discount (%): </label> <input required
+												type='number' value='0' step="0.01" class="form-control"
+												onblur='calculateDiscountP()' name="vat" id="totalVAT">
+										</div>
+									</div>
+									<div class="col-sm-3">
+										<div class="form-group">
+											<label for="totalDiscount">Discount (TK): </label> <input
+												class="form-control" required type='number' value='0'
+												step="0.01" onblur='calculateDiscountTK()' name="discount"
+												id="totalDiscount">
+										</div>
+									</div>
+									<div class="col-sm-3">
+										<div class="form-group">
+											<label for="netPayable">Net Payable: </label> <input required
+												readonly="readonly" type='number' value='0' id="netPayable"
+												class="form-control" name="netPayable">
+										</div>
+									</div>
+								</div>
+
+
+								<br /> <br /> <br />
+								<div class="box-footer  text-center">
+									<button type="button" class="btn btn-primary" id=""
+										onclick='submitSalesMaster()'>Save</button>
+									<!-- deleteAllRow -->
+									<button type="button" onclick='deleteAllRow()'
+										class="btn btn-danger">Reset</button>
+
+								</div>
+
+
+
+							</form>
+						</div>
+					</div>
+				</div>
+				<!-- /.row -->
+
+
+				<!-- /.row -->
+
+
+			</section>
+			<!-- /.content -->
+		</div>
+	</div>
+</body>
+</html>

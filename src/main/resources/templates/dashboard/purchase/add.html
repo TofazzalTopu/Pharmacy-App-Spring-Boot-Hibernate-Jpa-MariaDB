@@ -1,0 +1,413 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:th="http://www.thymeleaf.org"
+	layout:decorate="~{fragments/layout}">
+<head>
+<meta charset="UTF-8">
+<title>Title</title>
+
+<link rel="stylesheet" th:href="@{/assets/css/jquery-ui.css}">
+<link rel="stylesheet"
+	href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script th:src="@{/assets/js/jquery/jquery-ui.js}"></script>
+<style type="text/css">
+/* http://docs.jquery.com/UI/Autocomplete#theming*/
+.ui-autocomplete {
+	position: absolute;
+	cursor: default;
+	background: #CCC
+}
+
+/* workarounds */
+html .ui-autocomplete {
+	width: 1px;
+} /* without this, the menu expands to 100% in IE6 */
+.ui-menu {
+	list-style: none;
+	padding: 2px;
+	margin: 0;
+	display: block;
+	float: left;
+}
+
+.ui-menu .ui-menu {
+	margin-top: -3px;
+}
+
+.ui-menu .ui-menu-item {
+	margin: 0;
+	padding: 0;
+	zoom: 1;
+	float: left;
+	clear: left;
+	width: 100%;
+}
+
+.ui-menu .ui-menu-item a {
+	text-decoration: none;
+	display: block;
+	padding: .2em .4em;
+	line-height: 1.5;
+	zoom: 1;
+}
+
+.ui-menu .ui-menu-item a.ui-state-hover, .ui-menu .ui-menu-item a.ui-state-active
+	{
+	font-weight: normal;
+	margin: -1px;
+}
+
+input[type="number"] {
+	text-align: right;
+}
+</style>
+<script>
+	function findTotalAmount() {
+		var tpAmount = 0;
+		$('.tpAmount').each(function() {
+			var tpAmount_ = parseFloat($(this).val());
+			tpAmount = tpAmount + tpAmount_;
+		});
+		$("#totalAmount").val(tpAmount);
+
+		var vat = 0;
+		$('.vat').each(function() {
+			var vat_ = parseInt($(this).val());
+			vat = vat + vat_;
+		});
+		$("#totalVAT").val(vat);
+
+		var discount = 0;
+		$('.discount').each(function() {
+			var discount_ = parseInt($(this).val());
+			discount = discount + discount_;
+		});
+		$("#totalDiscount").val(discount);
+
+		var netPayable = parseInt(tpAmount) + vat - discount;
+		$("#netPayable").val(netPayable);
+
+	}
+
+	function findTotalQty(id) {
+		var boxQty = $("#boxQty" + id).val();
+		boxQty = boxQty == null ? 0 : boxQty;
+
+		var packSize = $("#packSize" + id).val();
+		packSize = packSize == null ? 0 : packSize;
+
+		var bonusQty = $("#bonusQty" + id).val();
+		bonusQty = bonusQty == null ? 0 : bonusQty;
+
+		var extraQty = $("#extraQty" + id).val();
+		extraQty = extraQty == null ? 0 : extraQty;
+
+		var totalQty = parseInt(boxQty) * parseInt(packSize)
+				+ parseInt(bonusQty) + parseInt(extraQty);
+
+		$("#totalQty" + id).val(totalQty);
+
+	}
+
+	function deleteRow(btn) {
+		var row = btn.parentNode.parentNode;
+		row.parentNode.removeChild(row);
+	}
+
+	function deleteAllRow() {
+		$("#selectedDrugBody").empty();
+	}
+
+	$(function() {
+		$("body").addClass("sidebar-collapse");
+
+		function log(message) {
+			$("<div>").text(message).prependTo("#log");
+			$("#log").scrollTop(0);
+		}
+
+		var host = getDomain();
+		var url = host + 'drugs/searchByName';
+		// var url = host + 'orders/search';
+		var sl = 0;
+
+		$("#searchDrug")
+				.autocomplete(
+						{
+							source : function(request, response) {
+								$.ajax({
+									url : url,
+									dataType : "json",
+									data : {
+										name : request.term
+									},
+									success : function(data) {
+										response(data);
+									}
+								});
+							},
+							minLength : 2,
+							classes : {
+								"ui-autocomplete" : "highlight"
+							},
+							select : function(event, ui) {
+
+								var row = $('#selectedDrugBody >tr').length;
+								if (row == 0) {
+									sl = row + 1;
+								} else {
+									sl = sl + 1;
+								}
+
+								var tr = "<tr><td>["
+										+ sl
+										+ "] "
+										+ ui.item.name
+										+ " <small><sup>"
+										+ ui.item.dosageForm
+										+ ui.item.strength
+										+ "</sup></small> in <em><small>"
+										+ ui.item.generic
+										+ "</small></em></td> <td>"
+										+ ui.item.company
+										+ "</td> "
+										+ "<td><input class='col-xs-12'  type='number' value='1' name='purchaseDetails["
+										+ row
+										+ "].boxQty'  min='0' id='boxQty"
+										+ sl
+										+ "' min='1' onblur='findTotalQty("
+										+ sl
+										+ ")' />"
+										+ "<input type='hidden' value='"+ui.item.id+"' name='purchaseDetails["+row+"].drugId' /></td>"
+										+ "<td><input class='col-xs-12'  type='number' value='1' name='purchaseDetails["
+                                    	+ row
+                                    	+ "].packSize'  min='0' id='packSize"
+										+ sl
+										+ "' min='1' onblur='findTotalQty("
+										+ sl
+										+ ")' /> </td>"
+										+ "<td><input class='col-xs-12'  type='number' value='0' name='purchaseDetails["
+										+ row
+										+ "].bonusQty'  min='0' id='bonusQty"
+										+ sl
+										+ "' onblur='findTotalQty("
+										+ sl
+										+ ")' /> </td>"
+										+ "<td><input class='col-xs-12'  type='number' value='0' name='purchaseDetails["
+										+ row
+										+ "].extraQty' min='0' id='extraQty"
+										+ sl
+										+ "' onblur='findTotalQty("
+										+ sl
+										+ ")' /> </td>"
+										+ "<td><input class='col-xs-12'  type='number' value='1' min='1' name='purchaseDetails["+row+"].totalQty'  id='totalQty"+sl+"' readonly style='background-color: #e9ecef;'/> </td>"
+										+ "<td><input class='col-xs-12 tpAmount'  type='number' value='100' min='1' step='0.01' name='purchaseDetails["
+										+ row
+										+ "].tpAmount'   id='tpAmount"
+										+ sl
+										+ "' onblur='findTotalAmount()' /> </td>"
+										+ "<td><input class='col-xs-12 vat'  type='number' value='0' min='0'  name='purchaseDetails["
+										+ row
+										+ "].vat' id='vat"
+										+ sl
+										+ "' onblur='findTotalAmount()'/> </td>"
+										+ "<td><input class='col-xs-12 discount'  type='number' value='0' min='0' name='purchaseDetails["
+										+ row
+										+ "].discount' id='discount"
+										+ sl
+										+ "' onblur='findTotalAmount()'/> </td>"
+										+ "<td><input class='col-xs-12 salePrice'  type='number'     name='purchaseDetails["
+										+ row
+										+ "].salePrice' min='0.01' step='.01'  id='salePrice" 
+										+ sl
+										+ "' value='"+ui.item.price+"' /> </td>"
+										+ "<td><button style='text-align: right;' class='btn btn-danger btn-xs' type='button' value='Delete' onclick='deleteRow(this)'>Delete</button></td>"
+										+ "</tr>";
+								// Drug Name, Company Name, Box Qty, Pack Size, Bonus Qty,Extra Qty, Total Qty, VAT, Discount, TP Amount
+								$("#selectedDrugBody").append(tr);
+							}
+
+						}).autocomplete("instance")._renderItem = function(ul,
+				item) {
+			var p1 = "<p>" + item.name + " <small><sup>" + item.dosageForm
+					+ item.strength + "</sup></small> in <em><small>"
+					+ item.generic + "</small></em>";
+			var p2 = "<br/>" + item.company + "</p>";
+			return $("<li>").append("<div>" + p1 + p2 + "</div>").appendTo(ul);
+		};
+
+		// End of 
+
+	});
+</script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script> -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+  $( function() {
+    $("#invDate").datepicker({ dateFormat: 'yy-mm-dd' });
+  } );
+  </script>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<p>
+					<a th:href="@{/adminpanel/dashboard/}">Home</a> / <a
+						th:href="@{/purchase/purchaseList}">Purchase</a> / Purchase Panel
+				</p>
+			</section>
+
+			<!-- Main content -->
+			<section class="content">
+				<div class="row">
+					<!-- left column -->
+					<div class="col-md-12">
+						<!-- general form elements -->
+
+						<div class="box box-primary">
+							<!-- /.box-header -->
+							<form id="app" role="form" th:action="@{/purchase/addPurchase}"
+								th:object="${purchaseMaster}" method="post">
+								<!-- <form id="app" role="form" th:action="@{/}" method="post"> -->
+								<!-- /.box-header -->
+
+								<div class="row">
+									<div class="col-sm-3">
+										<div class="form-group">
+											<label for="image">Purchase No: </label> <input required
+												type="text" class="form-control form-control-file"
+												name="purchaseNo">
+										</div>
+									</div>
+									<div class="col-sm-3">
+										<div class="form-group">
+											<label for="image">Supplier Name: </label> <input required
+												type="text" class="form-control form-control-file"
+												name="suplierName">
+										</div>
+									</div>
+									<div class="col-sm-3">
+										<div class="form-group">
+											<label for="image">SP Invoice No: </label> <input required
+												type="text" class="form-control form-control-file"
+												name="spInvId">
+										</div>
+									</div>
+									<div class="col-sm-3">
+										<div class="form-group">
+											<label for="image">Invoice Date: </label> <input required
+												type="text" class="form-control form-control-file"
+												name="invDate" id="invDate">
+										</div>
+									</div>
+								</div>
+
+								<!-- search drug -->
+								<div class="row">
+									<div class="col-md-6">
+										<div class="input-group">
+											<input type="text" name="q" class="form-control"
+												id="searchDrug" placeholder="Search Drug ...."> <span
+												class="input-group-btn">
+												<button type="button" name="search" id="search-btn"
+													class="btn btn-flat">
+													<i class="fa fa-search"></i>
+												</button>
+											</span>
+										</div>
+									</div>
+								</div>
+								<!-- End search drug -->
+
+								<div class="container-fluid">
+
+									<!-- <h3>Drug Details:</h3> -->
+									<table id="orderTable" class="table">
+										<thead>
+											<tr>
+												<th style="width: 12%;">Drug Name</th>
+												<th style="width: 12%;">Company Name</th>
+												<th style="width: 8%;">Box Qty</th>
+												<th style="width: 8%;">Pack Size</th>
+
+												<th style="width: 8%;">Bonus Qty</th>
+												<th style="width: 8%;">Extra Qty</th>
+												<th style="width: 8%;">Total Qty</th>
+												<th style="width: 8%;">TP Amount</th>
+
+												<th style="width: 7%;">VAT</th>
+												<th style="width: 8%;">Discount</th>
+												
+												<th style="width: 8%;">Sale Price</th>
+												<th style="width: 5%;">Action</th>
+
+											</tr>
+										</thead>
+										<tbody id="selectedDrugBody">
+										</tbody>
+									</table>
+								</div>
+
+								<div class="row">
+									<div class="col-sm-3">
+										<div class="form-group">
+											<label for="totalAmount">Total Amount: </label> <input
+												readonly="readonly" type='number' value='0' id="totalAmount"
+												class="form-control form-control-file" name="totalAmount">
+										</div>
+									</div>
+									<div class="col-sm-3">
+										<div class="form-group">
+											<label for="totalVAT">VAT: </label> <input required
+												readonly="readonly" type='number' value='0' id="totalVAT"
+												class="form-control form-control-file" name="totalVAT">
+										</div>
+									</div>
+									<div class="col-sm-3">
+										<div class="form-group">
+											<label for="totalDiscount">Discount: </label> <input required
+												readonly="readonly" type='number' value='0'
+												name="totalDiscount" id="totalDiscount"
+												class="form-control form-control-file">
+										</div>
+									</div>
+									<div class="col-sm-3">
+										<div class="form-group">
+											<label for="netPayable">Net Payable: </label> <input required
+												readonly="readonly" type='number' value='0' id="netPayable"
+												class="form-control form-control-file" name="netPayable">
+										</div>
+									</div>
+								</div>
+
+
+								<br /> <br /> <br /> <br /> <br />
+								<div class="box-footer  text-center">
+									<button type="submit" class="btn btn-primary">Save</button>
+									<!-- deleteAllRow -->
+									<button type="button" onclick='deleteAllRow()'
+										class="btn btn-danger">Reset</button>
+
+								</div>
+
+
+
+							</form>
+						</div>
+					</div>
+				</div>
+				<!-- /.row -->
+
+
+				<!-- /.row -->
+
+
+			</section>
+			<!-- /.content -->
+		</div>
+	</div>
+</body>
+</html>

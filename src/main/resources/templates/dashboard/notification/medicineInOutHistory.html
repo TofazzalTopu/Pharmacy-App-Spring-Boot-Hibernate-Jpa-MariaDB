@@ -1,0 +1,92 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:th="http://www.thymeleaf.org"
+	layout:decorate="~{fragments/layout}">
+<head>
+<meta charset="UTF-8">
+
+<script th:src="@{/assets/js/pms/stock/medicineInOutHistory.js}"></script>
+
+<style type="text/css">
+#overlay {
+	background: #ffffff;
+	color: #666666;
+	position: fixed;
+	height: 100%;
+	width: 100%;
+	z-index: 5000;
+	top: 0;
+	left: 0;
+	float: left;
+	text-align: center;
+	padding-top: 25%;
+}
+</style>
+
+
+</head>
+
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<div class="content-wrapper">
+			<div id="overlay">
+				<img th:src="@{/assets/img/loader.gif}" width="100px">
+				Loading...
+			</div>
+			
+			<section class="content-header">
+				<div class="row">
+						<div class="col-xs-6">Home > Stock > <strong>Stock In Out History </strong></div>						
+						<div class="col-xs-6 text-right" >
+							<p><a th:href="@{/adminpanel/dashboard/}">Home</a> / <a
+								th:href="@{/stock/stockList}">Stock List</a>
+							</p>
+						</div>
+				</div>				
+										
+			</section>
+			
+			<section class="content">
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="box">
+							<div class="box-body">
+								<table id="stockTable"
+									class="table table-bordered table-striped">
+									<caption style="text-align: center;">
+										Medicine: <span th:text="${drug?.name}"></span><span th:text="${drug?.strength}"></span> <sup> <span th:text="${drug?.dosageForm?.name}"></span></sup>, 
+										Generic: <span th:text="${drug?.generic?.name}"></span>, 
+										Company: <span th:text="${drug?.company?.name}"></span>
+									</caption>
+									<thead>
+										<tr>
+											<th style="text-align: right;">SL</th>
+											<th style="text-align: center;" >Transaction Time</th>
+											<th style="text-align: right;">Qty</th>
+											<th style="text-align: center;">Transaction Type</th>
+											<th style="text-align: center;">Transaction Name</th>
+											
+										</tr>
+									</thead>
+									<tbody id="myTBody">
+										<tr th:each="stock, iter : ${stockList}">
+											<td style="text-align: right;" th:text="${iter.count}"></td>
+											<td style="text-align: center;" th:text="${stock.generic}"></td>
+											<td th:text="${#numbers.formatDecimal(stock.stock, 0, 'COMMA', 2, 'POINT')}" 
+											style="text-align: right;"></td>
+											<td style="text-align: center;" th:text="${stock.strength}"></td>
+											<td style="text-align: center;" th:text="${stock.company}"></td>
+											
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</section>
+		</div>
+	</div>
+</body>
+</html>
